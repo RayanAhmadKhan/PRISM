@@ -15,7 +15,7 @@ This repo is split into:
 ### 1) Clone
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/RayanAhmadKhan/PRISM.git
 cd PRISM
 ```
 
