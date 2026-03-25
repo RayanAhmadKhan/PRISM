@@ -18,11 +18,12 @@ class FaceRecognitionSystem:
         """Initialize MediaPipe FaceMesh across different mediapipe API layouts."""
         face_mesh_cls = None
 
-        # Legacy API (common in older mediapipe releases)
+        #RECOGNISING THE FACE USING MEDIAPIPE FACE MESH
+        
+        #mediapipe style API 
         if hasattr(mp, "solutions") and hasattr(mp.solutions, "face_mesh"):
             face_mesh_cls = getattr(mp.solutions.face_mesh, "FaceMesh", None)
 
-        # Some newer/repackaged builds do not expose mp.solutions
         if face_mesh_cls is None:
             try:
                 from mediapipe.tasks.python.vision import FaceLandmarker
@@ -49,6 +50,7 @@ class FaceRecognitionSystem:
             return None
 
     def _cosine_distance(self, source_rep, test_rep):
+    #Compares enrolled vector and live vector
         """Compute cosine distance between two embedding vectors."""
         source_rep = np.asarray(source_rep, dtype=np.float32).flatten()
         test_rep = np.asarray(test_rep, dtype=np.float32).flatten()
@@ -62,6 +64,7 @@ class FaceRecognitionSystem:
         return 1.0 - (a / (np.sqrt(b) * np.sqrt(c)))
 
     def check_liveness(self, image_path: str) -> float:
+        #final_score = 60% match + 40% liveness
         """Simulates liveness by detecting 3D face mesh density (Anti-Spoofing check)."""
         if self.mp_face_mesh is None:
             # Neutral fallback when FaceMesh is unavailable in the runtime environment.
