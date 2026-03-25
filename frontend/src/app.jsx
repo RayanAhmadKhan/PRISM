@@ -1,4 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+
+import { useEffect } from 'react';
+
 import LoginPage from './pages/login.jsx';
 import SignupPage from './pages/signup.jsx';
 import StudentDashboard from './pages/dashboard-student.jsx';
@@ -9,6 +12,14 @@ import Login from './pages/v2/Login.jsx';
 import Signup from './pages/v2/Signup.jsx';
 
 function App() {
+  useEffect(() => {
+    // This tells React to "call" your backend
+    fetch('http://localhost:5000/')
+      .then(response => response.json())
+      .then(data => console.log("✅ Connected to Backend:", data))
+      .catch(error => console.error("❌ Connection Failed:", error));
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
