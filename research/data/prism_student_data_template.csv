@@ -1,0 +1,11 @@
+event_id,student_id,class_id,session_id,timestamp,day_of_week,hour_of_day,minutes_from_class_start,time_since_last_attendance_minutes,device_id_hash,ip_hash,network_type,device_changed_from_last_event,ip_changed_from_last_event,geo_lat,geo_lon,distance_from_last_event_km,travel_speed_kmh,face_match_distance,liveness_score,face_match_pass,retry_count_before_success,failed_attempts_last_7d,attendance_rate_30d,suspicious_events_last_30d,is_fraud
+EVT0001,STU001,CS501,S001,2026-02-03T08:58:12,Tuesday,8,-2,1420,DEV_A1,IP_11,wifi,0,0,17.3850,78.4867,0.4,2.1,0.22,0.93,1,0,0,0.94,0,0
+EVT0002,STU002,CS501,S001,2026-02-03T09:01:40,Tuesday,9,1,1390,DEV_B1,IP_21,wifi,0,0,17.4120,78.4510,0.6,2.5,0.28,0.89,1,0,1,0.90,0,0
+EVT0003,STU003,CS501,S001,2026-02-03T09:03:22,Tuesday,9,3,810,DEV_C1,IP_31,mobile,1,1,17.6120,78.3300,18.5,72.4,0.51,0.57,0,2,4,0.76,3,1
+EVT0004,STU004,CS501,S001,2026-02-03T09:05:08,Tuesday,9,5,1510,DEV_D1,IP_41,wifi,0,0,17.3990,78.4710,0.5,1.8,0.26,0.91,1,0,0,0.95,0,0
+EVT0005,STU005,CS501,S001,2026-02-03T09:06:33,Tuesday,9,6,35,DEV_E2,IP_59,mobile,1,1,17.8320,78.1210,45.2,540.0,0.67,0.42,0,3,6,0.62,5,1
+EVT0006,STU001,CS501,S002,2026-02-05T08:57:09,Thursday,8,-3,2878,DEV_A1,IP_11,wifi,0,0,17.3848,78.4864,0.3,1.9,0.20,0.95,1,0,0,0.96,0,0
+EVT0007,STU002,CS501,S002,2026-02-05T09:00:31,Thursday,9,0,2879,DEV_B1,IP_21,wifi,0,0,17.4118,78.4515,0.4,1.6,0.29,0.90,1,0,1,0.91,0,0
+EVT0008,STU003,CS501,S002,2026-02-05T09:02:50,Thursday,9,2,2860,DEV_X9,IP_88,mobile,1,1,17.1180,79.0020,83.7,120.5,0.59,0.48,0,2,5,0.71,4,1
+EVT0009,STU006,CS501,S002,2026-02-05T09:04:02,Thursday,9,4,1440,DEV_F1,IP_63,wifi,0,0,17.3901,78.4700,0.6,2.3,0.31,0.88,1,1,0,0.89,1,0
+EVT0010,STU007,CS501,S002,2026-02-05T09:04:55,Thursday,9,4,62,DEV_G2,IP_77,mobile,1,1,18.1020,77.7010,110.1,6390.0,0.73,0.33,0,4,8,0.55,6,1
