@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+deepface
+pandas
+scikit-learn
+opencv-python
+mediapipe
+tf-keras
+matplotlib
+seaborn
