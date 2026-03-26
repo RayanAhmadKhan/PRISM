@@ -1,6 +1,7 @@
 import React from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
+import Table from '../../components/Table'
 
 const StudentDash = () => {
     return (
@@ -34,39 +35,7 @@ const StudentDash = () => {
                     <div className="history-container flex flex-col gap-5 m-5">
                         <h1 className='font-bold text-xl'>Attendance History</h1>
 
-                        <div className="table02 w-300">
-                            <table className='bg-zinc-900 border-2 border-gray-600 flex flex-col gap-3 p-5 rounded-md'>
-                                <tr className='flex gap-67'>
-                                    <th>Date</th>
-                                    <th>Course</th>
-                                    <th>Status</th>
-                                    <th>Verified</th>
-                                </tr>
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>8:00</td>
-                                </tr >
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>9:00</td>
-                                </tr >
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>7:00</td>
-                                </tr >
-
-                                <div className="session-btn my-5">
-                                    <button className='bg-blue-700 p-1 w-40 h-8 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Add New Session</button>
-                                </div>
-                            </table>
-
-                        </div>
+                        <Table col1={"Dates"} col2={"Course"} col3={"Status"} col4={"Verified"} />
                     </div>
                 </div>
             </div>

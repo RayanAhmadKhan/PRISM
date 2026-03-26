@@ -1,6 +1,7 @@
 import React from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
+import Table from '../../components/Table'
 
 const AdminDash = () => {
     return (
@@ -14,44 +15,7 @@ const AdminDash = () => {
                     <div className="case-container flex flex-col gap-5 m-5">
                         <h1 className='font-bold text-xl'>User Management</h1>
 
-                        <div className="table01 w-300">
-                            <table className='bg-zinc-900 border-2 border-gray-600 flex flex-col gap-3 p-5 rounded-md'>
-                                <tr className='flex gap-69'>
-                                    <th>Name</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>
-                                        <button className='bg-blue-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Approve</button>
-                                        <button className='bg-red-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-red-900'>Reject</button>
-                                    </td>
-                                </tr >
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>
-                                        <button className='bg-blue-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Approve</button>
-                                        <button className='bg-red-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-red-900'>Reject</button>
-                                    </td>
-                                </tr >
-                                <tr className='flex gap-64'>
-                                    <td>Aisha Khan</td>
-                                    <td>75%</td>
-                                    <td>23L-XXXX</td>
-                                    <td className='flex gap-3'>
-                                        <button className='bg-blue-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Approve</button>
-                                        <button className='bg-red-700 p-1 w-20 h-8 font-bold rounded-sm cursor-pointer hover:bg-red-900'>Reject</button>
-                                    </td>
-                                </tr >
-                            </table>
-
-                        </div>
+                        <Table col1={"Name"} col2={"Role"} col3={"Status"} col4={"Action"} />
                     </div>
 
                     <div className="audit-logs-container border-2 border-gray-600 bg-zinc-900 flex flex-col gap-5 m-5 p-5 w-111 rounded-md">

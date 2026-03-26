@@ -13,6 +13,7 @@ import Signup from './pages/v2/Signup.jsx';
 import TeacherDash from './pages/v2/TeacherDash.jsx';
 import StudentDash from './pages/v2/StudentDash.jsx';
 import AdminDash from './pages/v2/AdminDash.jsx';
+import Course from './pages/v2/Course.jsx';
 
 function App() {
   useEffect(() => {
@@ -38,6 +39,7 @@ function App() {
       <Route path='/pages/v2/TeacherDash' element={<TeacherDash />} />
       <Route path='/pages/v2/StudentDash' element={<StudentDash />} />
       <Route path='/pages/v2/AdminDash' element={<AdminDash />} />
+      <Route path='/pages/v2/Course' element={<Course />} />
     </Routes>
   );
 }
