@@ -14,6 +14,8 @@ import TeacherDash from './pages/v2/TeacherDash.jsx';
 import StudentDash from './pages/v2/StudentDash.jsx';
 import AdminDash from './pages/v2/AdminDash.jsx';
 import Course from './pages/v2/Course.jsx';
+import StAttendance from './pages/v2/StAttendance.jsx';
+import StProfile from './pages/v2/StProfile.jsx';
 
 function App() {
   useEffect(() => {
@@ -40,6 +42,8 @@ function App() {
       <Route path='/pages/v2/StudentDash' element={<StudentDash />} />
       <Route path='/pages/v2/AdminDash' element={<AdminDash />} />
       <Route path='/pages/v2/Course' element={<Course />} />
+      <Route path='/pages/v2/StAttendance' element={<StAttendance />} />
+      <Route path='/pages/v2/StProfile' element={<StProfile />} />
     </Routes>
   );
 }

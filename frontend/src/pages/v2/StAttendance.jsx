@@ -1,11 +1,11 @@
 import React from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
-import CourseCard from '../../components/CourseCard'
+import Table from '../../components/Table'
 
-const Course = () => {
-    return (
-        <div className='min-h-dvh w-full'>
+const StAttendance = () => {
+  return (
+    <div className='min-h-dvh w-full'>
             <Navbar title={"Student"} user={"Ghulam Dastgir"} />
 
             <div className="body bg-zinc-900 flex">
@@ -13,21 +13,18 @@ const Course = () => {
 
                 <div className="container h-screen flex flex-col items-start bg-zinc-800">
                     <div className="header w-7xl flex justify-between m-3 p-3">
-                        <h1 className='font-bold text-2xl'>Courses</h1>
+                        <h1 className='font-bold text-2xl'>Attendance Record</h1>
 
-                        <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Start Verification</button>
+                        <button className='bg-blue-700 p-1 w-45 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Download PDF Report</button>
                     </div>
 
-                    <div className="cards grid grid-cols-2">
-                        <CourseCard />
-                        <CourseCard />
-                        <CourseCard />
-                        <CourseCard />
+                    <div className="my-table p-5">
+                        <Table col1={"Date"} col2={"Course"} col3={"Confidence"} col4={"Status"} />
                     </div>
                 </div>
             </div>
         </div>
-    )
+  )
 }
 
-export default Course
+export default StAttendance
