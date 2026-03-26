@@ -3,7 +3,7 @@ import React from 'react'
 const Signup = () => {
   return (
     <div className='flex justify-center items-center min-h-dvh w-full bg-blue-950'>
-            <div className="login-container flex gap-10 m-5 p-5 flex-col rounded-md justify-center items-center bg-zinc-900 h-120 w-100">
+            <div className="signup-container border-2 border-gray-600 flex gap-10 m-5 p-5 flex-col rounded-md justify-center items-center bg-zinc-900 h-120 w-100">
                 <div className="headings flex gap-3 justify-center items-center flex-col">
                     <h1 className='text-blue-400 font-bold text-2xl'>PRISM</h1>
                     <h1 className='text-gray-300 font-bold text-2xl'>Create Account</h1>

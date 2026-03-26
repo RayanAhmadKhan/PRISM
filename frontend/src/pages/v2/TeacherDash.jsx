@@ -1,32 +1,21 @@
 import React from 'react'
+import Navbar from '../../components/Navbar'
+import LeftNav from '../../components/LeftNav'
 
 const TeacherDashboard = () => {
   return (
     <div className='min-h-dvh w-full'>
-      <div className="nav flex justify-between bg-blue-950 items-center p-5 sticky top-0 z-10">
-        <h1 className='font-bold text-xl'>PRISM | Teacher Panel</h1>
-
-        <div className="right flex justify-center items-center gap-5">
-          <p className='font-bold'>Dr. Ahmad Riaz</p>
-
-          <button className='bg-blue-700 px-3 py-1 w-20 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Logout</button>
-        </div>
-      </div>
+      <Navbar title={"Teacher"} user={"Aamer Raheem"} />
 
       <div className="body bg-zinc-900 flex">
-        <div className="left-dash w-[15%] flex items-center justify-start py-6 gap-5 flex-col bg-zinc-900">
-          <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Dashboard</button>
-          <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Attendance Record</button>
-          <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Flagged Cases</button>
-          <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Profile Settings</button>
-        </div>
+        <LeftNav btn1={"Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
 
-        <div className="container h-screen flex flex-col items-center bg-zinc-800">
+        <div className="container h-screen flex flex-col bg-zinc-800">
           <div className="case-container flex flex-col gap-5 m-5">
             <h1 className='font-bold text-xl'>Flagged Cases</h1>
 
             <div className="table01 w-300">
-              <table className='bg-zinc-900 flex flex-col gap-3 p-5 rounded-md'>
+              <table className='bg-zinc-900 border-2 border-gray-600 flex flex-col gap-3 p-5 rounded-md'>
                 <tr className='flex gap-61'>
                   <th>Name</th>
                   <th>Face Match</th>
@@ -69,7 +58,7 @@ const TeacherDashboard = () => {
             <h1 className='font-bold text-xl'>Session Management</h1>
 
             <div className="table02 w-300">
-              <table className='bg-zinc-900 flex flex-col gap-3 p-5 rounded-md'>
+              <table className='bg-zinc-900 border-2 border-gray-600 flex flex-col gap-3 p-5 rounded-md'>
                 <tr className='flex gap-67'>
                   <th>Date</th>
                   <th>Course</th>
