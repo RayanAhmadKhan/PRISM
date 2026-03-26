@@ -11,6 +11,7 @@ import AdminDashboard from './pages/dashboard-admin.jsx';
 import Login from './pages/v2/Login.jsx';
 import Signup from './pages/v2/Signup.jsx';
 import TeacherDash from './pages/v2/TeacherDash.jsx';
+import StudentDash from './pages/v2/StudentDash.jsx';
 
 function App() {
   useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
       <Route path='/pages/v2/Login' element={<Login />} />
       <Route path='/pages/v2/Signup' element={<Signup />} />
       <Route path='/pages/v2/TeacherDash' element={<TeacherDash />} />
+      <Route path='/pages/v2/StudentDash' element={<StudentDash />} />
     </Routes>
   );
 }
