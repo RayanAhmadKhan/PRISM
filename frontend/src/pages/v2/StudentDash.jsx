@@ -9,7 +9,7 @@ const StudentDash = () => {
             <Navbar title={"Student"} user={"Ghulam Dastgir"} />
 
             <div className="body bg-zinc-900 flex">
-                <LeftNav btn1={"Dashboard"} btn2={"Courses"} btn3={"Attendance Record"} btn4={"Profile"} />
+                <LeftNav btn1={"Dashboard"} btn2={"Courses"} btn3={"Attendance History"} btn4={"Profile"} />
 
                 <div className="container h-screen flex flex-col items-start bg-zinc-800">
                     <div className="case-container border-2 border-gray-600 flex flex-col gap-5 m-5 bg-zinc-900 p-5 rounded-md w-150">
