@@ -4,8 +4,8 @@ import LeftNav from '../../components/LeftNav'
 import Table from '../../components/Table'
 
 const StAttendance = () => {
-  return (
-    <div className='min-h-dvh w-full'>
+    return (
+        <div className='min-h-dvh w-full'>
             <Navbar title={"Student"} user={"Ghulam Dastgir"} />
 
             <div className="body bg-zinc-900 flex">
@@ -19,12 +19,18 @@ const StAttendance = () => {
                     </div>
 
                     <div className="my-table p-5">
-                        <Table col1={"Date"} col2={"Course"} col3={"Confidence"} col4={"Status"} />
+                        <Table
+                            columns={["Date", "Course", "Confidence", "Status"]}
+                            rows={[
+                                { date: "12 Mar", course: "DLD", confidence: "80%", status: "Pending" },
+                                { date: "13 Mar", course: "DS", confidence: "65%", status: "Approved" }
+                            ]}
+                        />
                     </div>
                 </div>
             </div>
         </div>
-  )
+    )
 }
 
 export default StAttendance

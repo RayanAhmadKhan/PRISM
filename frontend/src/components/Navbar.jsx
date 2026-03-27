@@ -8,7 +8,7 @@ const Navbar = (props) => {
             <div className="right flex justify-center items-center gap-5">
                 <p className='font-bold'>{props.user}</p>
 
-                <button className='bg-blue-700 px-3 py-1 w-20 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Logout</button>
+                <button className='bg-blue-700 px-3 py-1 w-20 font-bold rounded-sm cursor-pointer hover:bg-red-800'>Logout</button>
             </div>
         </div>
     )

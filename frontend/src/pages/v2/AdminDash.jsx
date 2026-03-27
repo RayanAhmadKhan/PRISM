@@ -15,7 +15,14 @@ const AdminDash = () => {
                     <div className="case-container flex flex-col gap-5 m-5">
                         <h1 className='font-bold text-xl'>User Management</h1>
 
-                        <Table col1={"Name"} col2={"Role"} col3={"Status"} col4={"Action"} />
+                        <Table
+                            columns={["Name", "Role", "Status", "Action"]}
+                            rows={[
+                                { name: "Ali Khan", role: "Student", status: "Active", action: "View" },
+                                { name: "Ahmed Raza", role: "Teacher", status: "Inactive", action: "Manage" },
+                                { name: "Usman Tariq", role: "Admin", status: "Active", action: "Edit" }
+                            ]}
+                        />
                     </div>
 
                     <div className="audit-logs-container border-2 border-gray-600 bg-zinc-900 flex flex-col gap-5 m-5 p-5 w-111 rounded-md">
