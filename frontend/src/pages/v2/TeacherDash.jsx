@@ -9,7 +9,7 @@ const TeacherDashboard = () => {
       <Navbar title={"Teacher"} user={"Aamer Raheem"} />
 
       <div className="body bg-zinc-900 flex">
-        <LeftNav btn1={"Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
+        <LeftNav btn1={"Teacher Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
 
         <div className="container h-screen flex flex-col bg-zinc-800">
           <div className="case-container flex flex-col gap-5 m-5">

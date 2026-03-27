@@ -9,7 +9,7 @@ const AdminDash = () => {
             <Navbar title={"Admin"} user={"Ad Ali Liaqat"} />
 
             <div className="body bg-zinc-900 flex">
-                <LeftNav btn1={"Dashboard"} btn2={"User Management"} btn3={"Audit Logs"} btn4={"Settings"} />
+                <LeftNav btn1={"Admin Dashboard"} btn2={"User Management"} btn3={"Audit Logs"} btn4={"Settings"} />
 
                 <div className="container h-screen flex flex-col bg-zinc-800">
                     <div className="case-container flex flex-col gap-5 m-5">

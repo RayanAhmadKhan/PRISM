@@ -9,7 +9,7 @@ const Course = () => {
             <Navbar title={"Student"} user={"Ghulam Dastgir"} />
 
             <div className="body bg-zinc-900 flex">
-                <LeftNav btn1={"Dashboard"} btn2={"Courses"} btn3={"Attendance Record"} btn4={"Profile"} />
+                <LeftNav btn1={"Student Dashboard"} btn2={"Courses"} btn3={"Attendance History"} btn4={"Profile"} />
 
                 <div className="container h-screen flex flex-col items-start bg-zinc-800">
                     <div className="header w-7xl flex justify-between m-3 p-3">

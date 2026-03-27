@@ -3,23 +3,23 @@ import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import Table from '../../components/Table'
 
-const StAttendance = () => {
+const TchAttendance = () => {
   return (
     <div className='min-h-dvh w-full'>
-            <Navbar title={"Student"} user={"Ghulam Dastgir"} />
+            <Navbar title={"Teacher"} user={"Ghulam Dastgir"} />
 
             <div className="body bg-zinc-900 flex">
-                <LeftNav btn1={"Student Dashboard"} btn2={"Courses"} btn3={"Attendance History"} btn4={"Profile"} />
+                <LeftNav btn1={"Teacher Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
 
                 <div className="container h-screen flex flex-col items-start bg-zinc-800">
                     <div className="header w-7xl flex justify-between m-3 p-3">
                         <h1 className='font-bold text-2xl'>Attendance Record</h1>
 
-                        <button className='bg-blue-700 p-1 w-45 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Download PDF Report</button>
+                        <input type="text" placeholder='Search Student ID' className='bg-zinc-900 p-2 w-40 font-bold rounded-sm border-2 border-gray-600' />
                     </div>
 
-                    <div className="my-table p-5">
-                        <Table col1={"Date"} col2={"Course"} col3={"Confidence"} col4={"Status"} />
+                    <div className="flex flex-col m-5 gap-5">
+                      <Table />
                     </div>
                 </div>
             </div>
@@ -27,4 +27,4 @@ const StAttendance = () => {
   )
 }
 
-export default StAttendance
+export default TchAttendance
