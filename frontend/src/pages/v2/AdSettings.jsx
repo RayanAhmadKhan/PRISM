@@ -19,7 +19,7 @@ const AdSettings = () => {
             <div className="con01 flex flex-col gap-5 p-5 bg-zinc-900 border-2 border-gray-600 rounded-md">
               <h1 className='font-bold text-xl'>AI Recognition Config</h1>
               <h1>Face Match Sensitivity (0-100)</h1>
-              <input type="text" className='bg-zinc-800 border-2 border-gray-600 rounded-md' />
+              <input type="text" className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md' />
               <p className='text-yellow-200'>Higher values reduce false positives but may increase regections rates.</p>
 
               <div className="checkbox flex gap-5">
@@ -31,7 +31,7 @@ const AdSettings = () => {
             <div className="con02 flex flex-col gap-5 p-5 bg-zinc-900 border-2 border-gray-600 rounded-md">
               <h1 className='font-bold text-xl'>Security & Access</h1>
               <h1>Default Session Timeout (Minutes)</h1>
-              <input type="text" className='bg-zinc-800 border-2 border-gray-600 rounded-md' />
+              <input type="text" className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md' />
 
               <div className="checkbox flex gap-5">
                 <label htmlFor="checkbox">Require Admin MFA for User Detection</label>
