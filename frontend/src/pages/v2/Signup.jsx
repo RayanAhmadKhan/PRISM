@@ -1,4 +1,5 @@
 import React, { useState } from 'react' // 1. Import useState
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   // 2. Define states for the new account details
@@ -65,7 +66,7 @@ const Signup = () => {
 
         <div className="new-acc flex items-center gap-2">
           <p className='text-gray-300'>Already have an account?</p>
-          <a href="#login" className='text-blue-400 underline'>Login</a>
+          <Link to="/pages/v2/Login" className='text-blue-400 underline'>Login</Link>
         </div>
       </div>
     </div>

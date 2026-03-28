@@ -1,4 +1,5 @@
 import React, { useState } from 'react' // 1. Import useState
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     // 2. Define states for inputs and UI feedback
@@ -77,7 +78,7 @@ const Login = () => {
 
                 <div className="new-acc flex items-center gap-2">
                     <p className='text-gray-300'>New here?</p>
-                    <a href="#signup" className='text-blue-400 underline'>Create Account</a>
+                    <Link to="/pages/v2/Signup" className='text-blue-400 underline'>Create Account</Link>
                 </div>
             </div>
         </div>
