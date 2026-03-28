@@ -1,31 +1,74 @@
-import React from 'react'
+import React, { useState } from 'react' // 1. Import useState
 
 const Signup = () => {
+  // 2. Define states for the new account details
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignedUp, setIsSignedUp] = useState(false);
+
+  // 3. Handle the signup logic
+  const handleSignup = (e) => {
+    e.preventDefault();
+    if(email && password) {
+      console.log("Account Created:", { email, password });
+      setIsSignedUp(true); // Trigger a UI change
+    }
+  };
+
   return (
     <div className='flex justify-center items-center min-h-dvh w-full bg-blue-950'>
-            <div className="signup-container border-2 border-gray-600 flex gap-10 m-5 p-5 flex-col rounded-md justify-center items-center bg-zinc-900 h-120 w-100">
-                <div className="headings flex gap-3 justify-center items-center flex-col">
-                    <h1 className='text-blue-400 font-bold text-2xl'>PRISM</h1>
-                    <h1 className='text-gray-300 font-bold text-2xl'>Create Account</h1>
-                </div>
-
-                <div className="form">
-                    <form action="" className='flex flex-col gap-5 justify-center items-center'>
-                        <input className='w-80 h-10 bg-gray-600 rounded-sm p-2' type="text" placeholder='Email Address' />
-                        <input className='w-80 h-10 bg-gray-600 rounded-sm p-2' type="text" placeholder='Create Password' />
-                    </form>
-                </div>
-
-                <div className="button">
-                    <button className='bg-blue-700 px-5 py-2 m-1 w-80 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>SIGNUP</button>
-                </div>
-
-                <div className="new-acc flex items-center gap-2">
-                    <p className='text-gray-300'>Already have an account?</p>
-                    <a href="" className='text-blue-400 underline'>Login</a>
-                </div>
-            </div>
+      <div className="signup-container border-2 border-gray-600 flex gap-10 m-5 p-5 flex-col rounded-md justify-center items-center bg-zinc-900 h-130 w-100">
+        <div className="headings flex gap-3 justify-center items-center flex-col">
+          <h1 className='text-blue-400 font-bold text-2xl'>PRISM</h1>
+          <h1 className='text-gray-300 font-bold text-2xl'>Create Account</h1>
         </div>
+
+        {/* 4. Conditional UI: Show success message or the form */}
+        {isSignedUp ? (
+          <div className="text-center">
+            <p className='text-green-400 font-bold'>Account created successfully!</p>
+            <p className='text-gray-300'>Check your email to verify.</p>
+          </div>
+        ) : (
+          <>
+            <div className="form">
+              <form className='flex flex-col gap-5 justify-center items-center'>
+                {/* 5. Connect Email input */}
+                <input 
+                  className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white' 
+                  type="text" 
+                  placeholder='Email Address' 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                {/* 6. Connect Password input */}
+                <input 
+                  className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white' 
+                  type="password" 
+                  placeholder='Create Password' 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </form>
+            </div>
+
+            <div className="button">
+              <button 
+                onClick={handleSignup}
+                className='bg-blue-700 px-5 py-2 m-1 w-80 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
+              >
+                SIGNUP
+              </button>
+            </div>
+          </>
+        )}
+
+        <div className="new-acc flex items-center gap-2">
+          <p className='text-gray-300'>Already have an account?</p>
+          <a href="#login" className='text-blue-400 underline'>Login</a>
+        </div>
+      </div>
+    </div>
   )
 }
 

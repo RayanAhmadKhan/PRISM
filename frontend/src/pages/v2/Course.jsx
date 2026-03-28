@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react' // 1. Import useState
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import CourseCard from '../../components/CourseCard'
 
 const Course = () => {
+    // 2. Define state with an array of course data (dummy values)
+    const [courses, setCourses] = useState([
+        { id: 1, title: "Data Structures", code: "CS201", instructor: "Dr. Ali" },
+        { id: 2, title: "Operating Systems", code: "CS302", instructor: "Ms. Sarah" },
+        { id: 3, title: "Database Systems", code: "CS401", instructor: "Mr. Ahmed" },
+        { id: 4, title: "Web Development", code: "CS105", instructor: "Dr. Usman" }
+    ]);
+
     return (
         <div className='min-h-dvh w-full'>
             <Navbar title={"Student"} user={"Ghulam Dastgir"} />
@@ -15,14 +23,21 @@ const Course = () => {
                     <div className="header w-7xl flex justify-between m-3 p-3">
                         <h1 className='font-bold text-2xl'>Courses</h1>
 
-                        <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Start Verification</button>
+                        <button className='bg-blue-700 p-1 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>
+                            Start Verification
+                        </button>
                     </div>
 
-                    <div className="cards grid grid-cols-2">
-                        <CourseCard />
-                        <CourseCard />
-                        <CourseCard />
-                        <CourseCard />
+                    <div className="cards grid grid-cols-2 gap-4 p-3">
+                        {/* 3. Map through the courses state */}
+                        {courses.map((course) => (
+                            <CourseCard 
+                                key={course.id} 
+                                title={course.title} 
+                                code={course.code} 
+                                instructor={course.instructor} 
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

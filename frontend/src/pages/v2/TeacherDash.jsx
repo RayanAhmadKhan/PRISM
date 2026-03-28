@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react' // 1. Import useState
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import Table from '../../components/Table'
 
 const TeacherDashboard = () => {
+  // 2. State for Flagged Cases
+  const [flaggedCases, setFlaggedCases] = useState([
+    { name: "Ali Khan", faceMatch: "Matched", studentId: "STD101", actions: "View" },
+    { name: "Ahmed Raza", faceMatch: "Not Matched", studentId: "STD102", actions: "Review" },
+    { name: "Usman Tariq", faceMatch: "Matched", studentId: "STD103", actions: "View" }
+  ]);
+
+  // 3. State for Session Management
+  const [sessions, setSessions] = useState([
+    { date: "12 Mar 2026", course: "DLD", section: "A", time: "10:00 AM" },
+    { date: "13 Mar 2026", course: "DS", section: "B", time: "12:00 PM" },
+    { date: "14 Mar 2026", course: "OS", section: "A", time: "02:00 PM" }
+  ]);
+
   return (
     <div className='min-h-dvh w-full'>
       <Navbar title={"Teacher"} user={"Aamer Raheem"} />
@@ -14,25 +28,19 @@ const TeacherDashboard = () => {
         <div className="container h-screen flex flex-col bg-zinc-800">
           <div className="case-container flex flex-col gap-5 m-5">
             <h1 className='font-bold text-xl'>Flagged Cases</h1>
+            {/* 4. Pass the flaggedCases state to the Table */}
             <Table
               columns={["Name", "Face Match", "Student ID", "Actions"]}
-              rows={[
-                { name: "Ali Khan", faceMatch: "Matched", studentId: "STD101", actions: "View" },
-                { name: "Ahmed Raza", faceMatch: "Not Matched", studentId: "STD102", actions: "Review" },
-                { name: "Usman Tariq", faceMatch: "Matched", studentId: "STD103", actions: "View" }
-              ]}
+              rows={flaggedCases}
             />
           </div>
 
           <div className="session-container flex flex-col gap-5 m-5">
             <h1 className='font-bold text-xl'>Session Management</h1>
+            {/* 5. Pass the sessions state to the Table */}
             <Table
               columns={["Date", "Course", "Section", "Time"]}
-              rows={[
-                { date: "12 Mar 2026", course: "DLD", section: "A", time: "10:00 AM" },
-                { date: "13 Mar 2026", course: "DS", section: "B", time: "12:00 PM" },
-                { date: "14 Mar 2026", course: "OS", section: "A", time: "02:00 PM" }
-              ]}
+              rows={sessions}
             />
           </div>
         </div>
