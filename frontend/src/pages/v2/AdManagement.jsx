@@ -22,7 +22,7 @@ const AdManagement = () => {
             </div>
           </div>
 
-          <div className="my-table p-5 w-300">
+          <div className="p-5 w-7xl">
             <Table
               columns={["Name", "Role", "Status", "Action"]}
               rows={[

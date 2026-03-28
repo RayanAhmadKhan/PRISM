@@ -18,7 +18,7 @@ const StAttendance = () => {
                         <button className='bg-blue-700 p-1 w-45 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>Download PDF Report</button>
                     </div>
 
-                    <div className="my-table p-5">
+                    <div className="w-7xl p-5">
                         <Table
                             columns={["Date", "Course", "Confidence", "Status"]}
                             rows={[

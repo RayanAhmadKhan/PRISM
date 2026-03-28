@@ -19,14 +19,17 @@ const TchAttendance = () => {
           </div>
 
           <div className="flex flex-col m-5 gap-5">
-            <Table
-              columns={["Date", "Student Name", "ID", "Method", "Status"]}
-              rows={[
-                { date: "12 Mar 2026", studentName: "Ali Khan", id: "STD101", method: "Online", status: "Approved" },
-                { date: "13 Mar 2026", studentName: "Ahmed Raza", id: "STD102", method: "Physical", status: "Pending" },
-                { date: "14 Mar 2026", studentName: "Usman Tariq", id: "STD103", method: "Online", status: "Rejected" }
-              ]}
-            />
+
+            <div className="w-7xl">
+              <Table
+                columns={["Date", "Student Name", "ID", "Method", "Status"]}
+                rows={[
+                  { date: "12 Mar 2026", studentName: "Ali Khan", id: "STD101", method: "Online", status: "Approved" },
+                  { date: "13 Mar 2026", studentName: "Ahmed Raza", id: "STD102", method: "Physical", status: "Pending" },
+                  { date: "14 Mar 2026", studentName: "Usman Tariq", id: "STD103", method: "Online", status: "Rejected" }
+                ]}
+              />
+            </div>
           </div>
         </div>
       </div>

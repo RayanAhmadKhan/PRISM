@@ -35,14 +35,16 @@ const StudentDash = () => {
                     <div className="history-container flex flex-col gap-5 m-5">
                         <h1 className='font-bold text-xl'>Attendance History</h1>
 
-                        <Table
-                            columns={["Dates", "Course", "Status", "Verified"]}
-                            rows={[
-                                { dates: "12 Mar 2026", course: "DLD", status: "Pending", verified: "No" },
-                                { dates: "13 Mar 2026", course: "DS", status: "Completed", verified: "Yes" },
-                                { dates: "14 Mar 2026", course: "OS", status: "In Progress", verified: "No" }
-                            ]}
-                        />
+                        <div className='w-7xl'>
+                            <Table
+                                columns={["Dates", "Course", "Status", "Verified"]}
+                                rows={[
+                                    { dates: "12 Mar 2026", course: "DLD", status: "Pending", verified: "No" },
+                                    { dates: "13 Mar 2026", course: "DS", status: "Completed", verified: "Yes" },
+                                    { dates: "14 Mar 2026", course: "OS", status: "In Progress", verified: "No" }
+                                ]}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
