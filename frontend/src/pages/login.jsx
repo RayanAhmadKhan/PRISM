@@ -21,7 +21,7 @@ function LoginPage() {
       <div className="top-bar">Login Page</div>
       <div className="gradient-background">
         <form onSubmit={handleSubmit} className="auth-card">
-          <div className="auth-title-small">Welcome Back to PRIMS</div>
+          <div className="auth-title-small">Welcome Back to PRISM</div>
           <div className="auth-title-main">Sign Up with Email</div>
 
           <div className="auth-field">
