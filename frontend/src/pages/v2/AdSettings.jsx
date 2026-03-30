@@ -1,9 +1,8 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 
 const AdSettings = () => {
-  // 2. Define states for each setting field
   const [faceSensitivity, setFaceSensitivity] = useState(75);
   const [niqabFriendly, setNiqabFriendly] = useState(true);
   const [sessionTimeout, setSessionTimeout] = useState(30);
@@ -25,20 +24,18 @@ const AdSettings = () => {
             <div className="con01 flex flex-col gap-5 p-5 bg-zinc-900 border-2 border-gray-600 rounded-md">
               <h1 className='font-bold text-xl'>AI Recognition Config</h1>
               <h1>Face Match Sensitivity (0-100): <strong>{faceSensitivity}</strong></h1>
-              {/* 3. Connect text/number input */}
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={faceSensitivity}
                 onChange={(e) => setFaceSensitivity(e.target.value)}
-                className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md' 
+                className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md'
               />
               <p className='text-yellow-200'>Higher values reduce false positives but may increase rejections rates.</p>
 
               <div className="checkbox flex gap-5">
                 <label htmlFor="niqab">Enable Niqab-Friendly Detection</label>
-                {/* 4. Connect checkbox (use .checked instead of .value) */}
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   id='niqab'
                   checked={niqabFriendly}
                   onChange={(e) => setNiqabFriendly(e.target.checked)}
@@ -49,26 +46,25 @@ const AdSettings = () => {
             <div className="con02 flex flex-col gap-5 p-5 bg-zinc-900 border-2 border-gray-600 rounded-md">
               <h1 className='font-bold text-xl'>Security & Access</h1>
               <h1>Default Session Timeout (Minutes)</h1>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={sessionTimeout}
                 onChange={(e) => setSessionTimeout(e.target.value)}
-                className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md' 
+                className='bg-zinc-800 p-1 border-2 border-gray-600 rounded-md'
               />
 
               <div className="checkbox flex gap-5">
                 <label htmlFor="mfa">Require Admin MFA for User Detection</label>
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   id='mfa'
                   checked={requireMFA}
                   onChange={(e) => setRequireMFA(e.target.checked)}
                 />
               </div>
             </div>
-            
-            {/* 5. A button to see all states in console */}
-            <button 
+
+            <button
               onClick={() => console.log({ faceSensitivity, niqabFriendly, sessionTimeout, requireMFA })}
               className='bg-blue-700 p-2 rounded-md font-bold hover:bg-blue-900'
             >

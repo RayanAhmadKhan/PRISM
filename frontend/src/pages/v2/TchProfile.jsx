@@ -1,14 +1,12 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import { useForm } from 'react-hook-form'
 
 const TchProfile = () => {
-  // 2. State for feedback message
   const [statusMessage, setStatusMessage] = useState("");
 
   const { register, handleSubmit } = useForm({
-    // Optional: Set dummy initial values
     defaultValues: {
       name: "Aamer Raheem",
       email: "aamer.raheem@university.edu",
@@ -19,10 +17,8 @@ const TchProfile = () => {
 
   const onSubmit = (data) => {
     console.log("Form Data:", data);
-    // 3. Update state to show success
     setStatusMessage("Settings updated successfully!");
-    
-    // Hide message after 3 seconds
+
     setTimeout(() => setStatusMessage(""), 3000);
   };
 
@@ -36,8 +32,7 @@ const TchProfile = () => {
         <div className="container h-screen flex flex-col items-start bg-zinc-800">
           <div className="header w-7xl flex justify-between m-3 p-3">
             <h1 className='font-bold text-2xl'>Profile Settings</h1>
-            
-            {/* 4. Display the status message if it exists */}
+
             {statusMessage && (
               <p className="bg-green-600 text-white px-4 py-2 rounded-md font-bold animate-pulse">
                 {statusMessage}

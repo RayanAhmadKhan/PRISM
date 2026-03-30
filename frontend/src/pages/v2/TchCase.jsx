@@ -1,18 +1,15 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 
 const TchCase = () => {
-  // 2. Define state with an array of flagged case objects
   const [flaggedCases, setFlaggedCases] = useState([
     { id: 1, name: "Zain Malik", roll: "23L-XXXX", reason: "Face match 45% (Niqab / Mask detected)" },
     { id: 2, name: "Hassan Ali", roll: "23L-YYYY", reason: "Multiple faces detected in frame" },
   ]);
 
-  // 3. Logic to remove a case once handled
   const handleAction = (id, actionType) => {
     console.log(`${actionType}ing case ID: ${id}`);
-    // Filter out the case that was just acted upon
     setFlaggedCases(prevCases => prevCases.filter(c => c.id !== id));
   };
 
@@ -28,7 +25,6 @@ const TchCase = () => {
             <h1 className='font-bold text-2xl'>Flagged Cases ({flaggedCases.length})</h1>
           </div>
 
-          {/* 4. Map through the cases in state */}
           {flaggedCases.length > 0 ? (
             flaggedCases.map((item) => (
               <div key={item.id} className="case w-7xl flex justify-between items-center m-3 p-3 bg-zinc-900 rounded-md border-2 border-gray-600">
@@ -38,15 +34,14 @@ const TchCase = () => {
                 </div>
 
                 <div className="buttons flex gap-3 p-7">
-                  {/* 5. Attach click handlers to buttons */}
-                  <button 
+                  <button
                     onClick={() => handleAction(item.id, "Verify")}
                     className='bg-blue-700 w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
                   >
                     Verify
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => handleAction(item.id, "Report")}
                     className='bg-red-600 w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-red-800'
                   >

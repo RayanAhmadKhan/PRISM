@@ -1,9 +1,8 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 
 const AdAudit = () => {
-  // 2. Define state with dummy data objects
   const [logs, setLogs] = useState([
     { id: 1, date: "2023-10-01", time: "10:00 AM", name: "Ali Liaqat", description: "Updated User Roles" },
     { id: 2, date: "2023-10-01", time: "11:30 AM", name: "Admin", description: "Deleted Flagged Case #102" },
@@ -23,8 +22,7 @@ const AdAudit = () => {
           </div>
 
           <div className="audit-logs audit-logs-container border-2 border-gray-600 bg-zinc-900 flex flex-col gap-5 m-5 p-5 w-7xl rounded-md">
-            
-            {/* 3. Map through the logs state to render each item */}
+
             {logs.map((log) => (
               <div key={log.id} className="log flex gap-10">
                 <p>{log.date}</p>

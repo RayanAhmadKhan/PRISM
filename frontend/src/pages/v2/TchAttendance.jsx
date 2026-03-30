@@ -1,20 +1,17 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import Table from '../../components/Table'
 
 const TchAttendance = () => {
-  // 2. State for the Search Input
   const [searchId, setSearchId] = useState("");
 
-  // 3. State for the Attendance Data (dummy values)
   const [attendanceData, setAttendanceData] = useState([
     { date: "12 Mar 2026", studentName: "Ali Khan", id: "STD101", method: "Online", status: "Approved" },
     { date: "13 Mar 2026", studentName: "Ahmed Raza", id: "STD102", method: "Physical", status: "Pending" },
     { date: "14 Mar 2026", studentName: "Usman Tariq", id: "STD103", method: "Online", status: "Rejected" }
   ]);
 
-  // 4. Logic to filter the table based on the Student ID typed
   const filteredRows = attendanceData.filter((row) =>
     row.id.toLowerCase().includes(searchId.toLowerCase())
   );
@@ -30,10 +27,9 @@ const TchAttendance = () => {
           <div className="header w-7xl flex justify-between m-3 p-3">
             <h1 className='font-bold text-2xl'>Attendance Record</h1>
 
-            {/* 5. Connect Search Input to searchId state */}
-            <input 
-              type="text" 
-              placeholder='Search Student ID' 
+            <input
+              type="text"
+              placeholder='Search Student ID'
               className='bg-zinc-900 p-2 w-40 font-bold rounded-sm border-2 border-gray-600 text-white'
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
@@ -42,7 +38,6 @@ const TchAttendance = () => {
 
           <div className="flex flex-col m-5 gap-5">
             <div className="w-7xl">
-              {/* 6. Pass the filtered list to the Table */}
               <Table
                 columns={["Date", "Student Name", "ID", "Method", "Status"]}
                 rows={filteredRows}

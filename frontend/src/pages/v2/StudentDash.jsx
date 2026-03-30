@@ -1,25 +1,21 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import Table from '../../components/Table'
 
 const StudentDash = () => {
-    // 2. States for Attendance Marking
-    const [method, setMethod] = useState("Face"); // Tracks "Face" or "Fingerprint"
+    const [method, setMethod] = useState("Face");
     const [confidence, setConfidence] = useState(96);
     const [isVerifying, setIsVerifying] = useState(false);
 
-    // 3. State for Attendance History Table
     const [history, setHistory] = useState([
         { dates: "12 Mar 2026", course: "DLD", status: "Pending", verified: "No" },
         { dates: "13 Mar 2026", course: "DS", status: "Completed", verified: "Yes" },
         { dates: "14 Mar 2026", course: "OS", status: "In Progress", verified: "No" }
     ]);
 
-    // 4. Action to simulate verification
     const startVerification = () => {
         setIsVerifying(true);
-        // Simulate a random confidence update
         setConfidence(Math.floor(Math.random() * (100 - 80 + 1)) + 80);
         setTimeout(() => setIsVerifying(false), 2000);
     };
@@ -37,14 +33,13 @@ const StudentDash = () => {
 
                         <div className="mark-attendance w-300">
                             <div className="buttons flex gap-1">
-                                {/* 5. Highlight active button using state */}
-                                <button 
+                                <button
                                     onClick={() => setMethod("Face")}
                                     className={`bg-zinc-900 border-2 ${method === "Face" ? 'border-blue-500' : 'border-gray-500'} w-70 h-10 hover:cursor-pointer`}
                                 >
                                     Face
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => setMethod("Fingerprint")}
                                     className={`bg-zinc-900 border-2 ${method === "Fingerprint" ? 'border-blue-500' : 'border-gray-500'} w-70 h-10 hover:cursor-pointer`}
                                 >
@@ -57,7 +52,7 @@ const StudentDash = () => {
                                 <h1 className='font-extrabold text-2xl text-blue-400'>{confidence}%</h1>
 
                                 <div className="verify-button">
-                                    <button 
+                                    <button
                                         onClick={startVerification}
                                         className='bg-blue-700 p-1 w-140 font-bold rounded-sm cursor-pointer hover:bg-blue-900 disabled:bg-gray-600'
                                         disabled={isVerifying}
@@ -73,7 +68,6 @@ const StudentDash = () => {
                         <h1 className='font-bold text-xl'>Attendance History</h1>
 
                         <div className='w-7xl'>
-                            {/* 6. Pass the history state to the Table */}
                             <Table
                                 columns={["Dates", "Course", "Status", "Verified"]}
                                 rows={history}

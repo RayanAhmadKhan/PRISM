@@ -1,21 +1,19 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 const Login = () => {
-    // 2. Define states for inputs and UI feedback
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState("");
 
-    // 3. Handle the login click
     const handleLogin = (e) => {
         e.preventDefault();
         if (!username || !password) {
             setError("Please fill in all fields.");
             return;
         }
-        setError(""); // Clear error if fields are full
+        setError("");
         console.log("Logging in with:", { username, password, rememberMe });
     };
 
@@ -29,33 +27,30 @@ const Login = () => {
 
                 <div className="form">
                     <form className='flex flex-col gap-5 justify-center items-center'>
-                        {/* 4. Connect Username input */}
-                        <input 
-                            className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white' 
-                            type="text" 
-                            placeholder='Username / Email' 
+                        <input
+                            className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white'
+                            type="text"
+                            placeholder='Username / Email'
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
-                        {/* 5. Connect Password input (changed type to password for security) */}
-                        <input 
-                            className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white' 
-                            type="password" 
-                            placeholder='Password' 
+                        <input
+                            className='w-80 h-10 bg-gray-600 rounded-sm p-2 text-white'
+                            type="password"
+                            placeholder='Password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </form>
                 </div>
 
-                {/* Display error message if it exists */}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
 
                 <div className="after-form flex justify-between gap-20 items-center w-80">
                     <div className="checkbox flex justify-between items-center gap-2">
-                        <input 
-                            type="checkbox" 
-                            className='w-3 h-3' 
+                        <input
+                            type="checkbox"
+                            className='w-3 h-3'
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
                         />
@@ -68,7 +63,7 @@ const Login = () => {
                 </div>
 
                 <div className="button">
-                    <button 
+                    <button
                         onClick={handleLogin}
                         className='bg-blue-700 px-5 py-2 m-1 w-80 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
                     >

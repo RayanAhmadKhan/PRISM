@@ -1,10 +1,9 @@
-import React, { useState } from 'react' // 1. Import useState
+import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 import LeftNav from '../../components/LeftNav'
 import CourseCard from '../../components/CourseCard'
 
 const Course = () => {
-    // 2. Define state with an array of course data (dummy values)
     const [courses, setCourses] = useState([
         { id: 1, title: "Data Structures", code: "CS201", instructor: "Dr. Ali" },
         { id: 2, title: "Operating Systems", code: "CS302", instructor: "Ms. Sarah" },
@@ -29,13 +28,12 @@ const Course = () => {
                     </div>
 
                     <div className="cards grid grid-cols-2 gap-4 p-3">
-                        {/* 3. Map through the courses state */}
                         {courses.map((course) => (
-                            <CourseCard 
-                                key={course.id} 
-                                title={course.title} 
-                                code={course.code} 
-                                instructor={course.instructor} 
+                            <CourseCard
+                                key={course.id}
+                                title={course.title}
+                                code={course.code}
+                                instructor={course.instructor}
                             />
                         ))}
                     </div>
