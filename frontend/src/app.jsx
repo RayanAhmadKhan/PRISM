@@ -34,20 +34,25 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<LoginPage />} />
+      {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+      <Route path="/" element={<Login />} />
+
+      {/* <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/dashboard/student" element={<StudentDashboard />} />
       <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
-      <Route path="/dashboard/admin" element={<AdminDashboard />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/dashboard/admin" element={<AdminDashboard />} /> */}
 
+      {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+      <Route path="*" element={<Login />} />
+
+      // New paths, the current ones
       <Route path='/pages/v2/Login' element={<Login />} />
       <Route path='/pages/v2/Signup' element={<Signup />} />
       <Route path='/pages/v2/TeacherDash' element={<TeacherDash />} />
       <Route path='/pages/v2/StudentDash' element={<StudentDash />} />
       <Route path='/pages/v2/AdminDash' element={<AdminDash />} />
-      
+
       <Route path='/pages/v2/Course' element={<Course />} />
       <Route path='/pages/v2/StAttendance' element={<StAttendance />} />
       <Route path='/pages/v2/StProfile' element={<StProfile />} />
