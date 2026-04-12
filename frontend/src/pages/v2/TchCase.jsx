@@ -16,34 +16,29 @@ const TchCase = () => {
   return (
     <div className='min-h-dvh w-full'>
       <Navbar title={"Teacher"} user={"Aamer Raheem"} />
-
       <div className="body bg-zinc-900 flex">
         <LeftNav btn1={"Teacher Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
-
-        <div className="container h-screen flex flex-col items-start bg-zinc-800">
-          <div className="header w-7xl flex justify-between m-3 p-3">
-            <h1 className='font-bold text-2xl'>Flagged Cases ({flaggedCases.length})</h1>
+        <div className="container h-screen flex flex-col items-start bg-zinc-800 w-full overflow-y-auto">
+          <div className="header w-full flex justify-between m-3 p-3">
+            <h1 className='font-bold text-lg md:text-2xl'>Flagged Cases ({flaggedCases.length})</h1>
           </div>
-
           {flaggedCases.length > 0 ? (
             flaggedCases.map((item) => (
-              <div key={item.id} className="case w-7xl flex justify-between items-center m-3 p-3 bg-zinc-900 rounded-md border-2 border-gray-600">
-                <div className="content flex flex-col">
-                  <h1 className='font-bold text-xl'>Student: {item.name} ({item.roll})</h1>
-                  <p className='text-red-500'>Reason: {item.reason} - Manual Verification Required</p>
+              <div key={item.id} className="case w-full flex flex-col sm:flex-row justify-between items-start sm:items-center m-3 p-3 bg-zinc-900 rounded-md border-2 border-gray-600 gap-3 sm:gap-0">
+                <div className="content flex flex-col gap-1">
+                  <h1 className='font-bold text-base md:text-xl'>Student: {item.name} ({item.roll})</h1>
+                  <p className='text-red-500 text-sm md:text-base'>Reason: {item.reason} - Manual Verification Required</p>
                 </div>
-
-                <div className="buttons flex gap-3 p-7">
+                <div className="buttons flex gap-3 p-3 md:p-7 w-full sm:w-auto">
                   <button
                     onClick={() => handleAction(item.id, "Verify")}
-                    className='bg-blue-700 w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
+                    className='bg-blue-700 w-full sm:w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
                   >
                     Verify
                   </button>
-
                   <button
                     onClick={() => handleAction(item.id, "Report")}
-                    className='bg-red-600 w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-red-800'
+                    className='bg-red-600 w-full sm:w-20 h-10 font-bold rounded-sm cursor-pointer hover:bg-red-800'
                   >
                     Report
                   </button>
@@ -51,7 +46,7 @@ const TchCase = () => {
               </div>
             ))
           ) : (
-            <p className="m-5 text-gray-400 italic">No flagged cases remaining.</p>
+            <p className="m-5 text-gray-400 italic text-sm md:text-base">No flagged cases remaining.</p>
           )}
         </div>
       </div>

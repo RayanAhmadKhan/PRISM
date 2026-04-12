@@ -12,28 +12,23 @@ const AdAudit = () => {
   return (
     <div className='min-h-dvh w-full'>
       <Navbar title={"Admin"} user={"Ad Ali Liaqat"} />
-
       <div className="body bg-zinc-900 flex">
         <LeftNav btn1={"Admin Dashboard"} btn2={"User Management"} btn3={"Audit Logs"} btn4={"Settings"} />
-
-        <div className="container h-screen flex flex-col items-start bg-zinc-800">
-          <div className="header w-7xl flex justify-between m-3 p-3">
-            <h1 className='font-bold text-2xl'>Audit Logs</h1>
+        <div className="container h-screen flex flex-col items-start bg-zinc-800 w-full overflow-x-auto">
+          <div className="header w-full flex justify-between m-3 p-3">
+            <h1 className='font-bold text-lg md:text-2xl'>Audit Logs</h1>
           </div>
-
-          <div className="audit-logs audit-logs-container border-2 border-gray-600 bg-zinc-900 flex flex-col gap-5 m-5 p-5 w-7xl rounded-md">
-
+          <div className="audit-logs audit-logs-container border-2 border-gray-600 bg-zinc-900 flex flex-col gap-5 m-2 md:m-5 p-3 md:p-5 w-full max-w-full rounded-md overflow-x-auto">
             {logs.map((log) => (
-              <div key={log.id} className="log flex gap-10">
+              <div key={log.id} className="log flex flex-col sm:flex-row gap-2 sm:gap-5 md:gap-10 text-sm md:text-base">
                 <p>{log.date}</p>
                 <p>{log.time}</p>
                 <p>{log.name}</p>
                 <p>{log.description}</p>
               </div>
             ))}
-
             <div className="export-btn">
-              <button className='bg-blue-700 p-1 w-50 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>
+              <button className='bg-blue-700 p-1 w-full sm:w-50 font-bold rounded-sm cursor-pointer hover:bg-blue-900'>
                 Download CSV Report
               </button>
             </div>
