@@ -19,21 +19,18 @@ const TeacherDashboard = () => {
   return (
     <div className='min-h-dvh w-full'>
       <Navbar title={"Teacher"} user={"Aamer Raheem"} />
-
       <div className="body bg-zinc-900 flex">
         <LeftNav btn1={"Teacher Dashboard"} btn2={"Attendance Record"} btn3={"Flagged Cases"} btn4={"Profile Settings"} />
-
-        <div className="container h-screen flex flex-col bg-zinc-800">
-          <div className="case-container flex flex-col gap-5 m-5">
-            <h1 className='font-bold text-xl'>Flagged Cases</h1>
+        <div className="container h-screen flex flex-col bg-zinc-800 w-full overflow-y-auto">
+          <div className="case-container flex flex-col gap-5 m-3 md:m-5 overflow-x-auto">
+            <h1 className='font-bold text-lg md:text-xl'>Flagged Cases</h1>
             <Table
               columns={["Name", "Face Match", "Student ID", "Actions"]}
               rows={flaggedCases}
             />
           </div>
-
-          <div className="session-container flex flex-col gap-5 m-5">
-            <h1 className='font-bold text-xl'>Session Management</h1>
+          <div className="session-container flex flex-col gap-5 m-3 md:m-5 overflow-x-auto">
+            <h1 className='font-bold text-lg md:text-xl'>Session Management</h1>
             <Table
               columns={["Date", "Course", "Section", "Time"]}
               rows={sessions}
