@@ -25,11 +25,11 @@ const studentSchema = new mongoose.Schema({
     }],
     fingerprintData:{
         type: Buffer,
-        default: null
+        required: true
     },
     faceData:{
         type: Buffer,
-        default: null
+        required: true
     }
 })
 
