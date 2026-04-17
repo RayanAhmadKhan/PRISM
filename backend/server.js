@@ -5,6 +5,7 @@ import connectdb from "./config/db.js";
 import testRoutes from "./routes/testRoutes.js";
 import addUserRoutes from "./routes/addUserRoutes.js";
 import deleteUserRoutes from "./routes/deleteUserRouter.js";
+import getAllUsersRoute from "./routes/getAllUsersRoute.js";
 
 env.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/test", testRoutes);
 app.use("/addUser", addUserRoutes);
 app.use("/deleteUser", deleteUserRoutes);
+app.use("/getAllUsers", getAllUsersRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
