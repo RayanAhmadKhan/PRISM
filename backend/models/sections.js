@@ -35,6 +35,6 @@ const sectionSchema = new mongoose.Schema(
 );
 
 sectionSchema.index({ sectionName: 1, courseCode: 1 }, { unique: true });
-const Sections = mongoose.model("Sections", sectionSchema);
+const Sections =  mongoose.models.Sections || mongoose.model("Sections", sectionSchema);
 
 export default Sections;
