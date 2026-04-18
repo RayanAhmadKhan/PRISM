@@ -9,6 +9,7 @@ import getAllUsersRoute from "./routes/getAllUsersRoute.js";
 import createSectionRoute from "./routes/createSectionRoute.js";
 import deleteSectionRoute from "./routes/deleteSectionRoute.js";
 import getSelectionRoute from "./routes/getSelectionRoute.js";
+import createCourseRoute from "./routes/createCourseRoute.js";
 
 env.config();
 
@@ -25,6 +26,7 @@ app.use("/getAllUsers", getAllUsersRoute);
 app.use("/section", createSectionRoute);
 app.use("/deleteSection", deleteSectionRoute);
 app.use("/getSection", getSelectionRoute);
+app.use("/createCourse", createCourseRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
