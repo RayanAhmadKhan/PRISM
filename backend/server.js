@@ -14,6 +14,7 @@ import deleteCourseRoute from "./routes/deleteCourseRoute.js";
 import getCourseRoute from "./routes/getCourseRoute.js";
 import createAttendanceRoute from "./routes/createAttendanceroute.js";
 import deleteAttendanceRecordRoute from "./routes/deleteAttendanceRecordRoute.js";
+import getAttendanceRecordRoute from "./routes/getAttendanceRecordRoute.js";
 
 env.config();
 
@@ -35,6 +36,7 @@ app.use("/deleteCourse", deleteCourseRoute);
 app.use("/getCourse", getCourseRoute);
 app.use("/createAttendance", createAttendanceRoute);
 app.use("/deleteAttendanceRecord", deleteAttendanceRecordRoute);
+app.use("/getAttendanceRecord", getAttendanceRecordRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
