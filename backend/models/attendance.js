@@ -1,43 +1,72 @@
 import mongoose from "mongoose";
 
-const attendanceSchema = new mongoose.Schema({
-  section: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Section",
-    required: true
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-    required: true
- },
-  students: [
-    {
-      student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-      status: {
-        type: String,
-        enum: ["Present", "Absent"],
-        default: "Absent"
-      },
-      confidenceScore: {
-        type: Number,
-        min: 0,
-        max: 1,
-        required: true
-      },
-      flagged: { 
-        type: Boolean,
-        default: false
-    }
-    }
-  ],
-  markedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Instructor",
-    required: true
- }
-});
+const attendanceSchema = new mongoose.Schema(
+  {
+    section: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sections",
+      required: true
+    },
 
-const Attendance = mongoose.model("Attendance", attendanceSchema);
+    date: {
+      type: String,
+      required: true
+    },
+
+    students: [
+      {
+        student: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Students",
+          required: true
+        },
+        status: {
+          type: String,
+          enum: ["Present", "Absent"],
+          default: "Absent"
+        },
+        confidenceScore: {
+          type: Number,
+          min: 0,
+          max: 1,
+          default: 0
+        },
+        flagged: {
+          type: Boolean,
+          default: false
+        }
+      }
+    ],
+
+    markedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Instructors",
+      required: true
+    },
+
+    status: {
+      type: String,
+      enum: ["open", "closed"],
+      default: "open"
+    },
+
+    startTime: {
+      type: Date,
+      default: Date.now
+    },
+
+    endTime: {
+      type: Date,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
+attendanceSchema.index({ section: 1, date: 1 }, { unique: true });
+attendanceSchema.index({ "students.student": 1 });
+
+const Attendance =
+  mongoose.models.Attendance || mongoose.model("Attendance", attendanceSchema);
 
 export default Attendance;
