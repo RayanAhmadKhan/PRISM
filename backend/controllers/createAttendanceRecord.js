@@ -29,8 +29,6 @@ export const createAttendanceRecord = async (req, res) => {
       flagged: false
     }));
 
-    console.log("Creating attendance for section", sectionId, "with students", students);
-
     const now = new Date();
 
     const attendanceRecord = new Attendance({
@@ -49,6 +47,7 @@ export const createAttendanceRecord = async (req, res) => {
       message: "Attendance created",
       attendanceRecord
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
