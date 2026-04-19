@@ -26,7 +26,8 @@ export const createAttendanceRecord = async (req, res) => {
       student: s._id,
       status: "Absent",
       confidenceScore: 0,
-      flagged: false
+      flagged: false,
+      responded: false 
     }));
 
     const now = new Date();

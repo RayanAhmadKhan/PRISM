@@ -2,6 +2,8 @@ import express from "express";
 import env from "dotenv";
 import cors from "cors";
 import connectdb from "./config/db.js";
+import { startAttendanceCron } from "./cron/attendanceCron.js";
+
 import testRoutes from "./routes/testRoutes.js";
 import addUserRoutes from "./routes/addUserRoutes.js";
 import deleteUserRoutes from "./routes/deleteUserRouter.js";
@@ -23,6 +25,8 @@ env.config();
 
 const port = process.env.PORT || 3000;
 const app = express();
+
+startAttendanceCron();
 
 app.use(cors());
 

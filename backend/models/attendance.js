@@ -20,18 +20,26 @@ const attendanceSchema = new mongoose.Schema(
           ref: "Students",
           required: true
         },
+
         status: {
           type: String,
           enum: ["Present", "Absent"],
           default: "Absent"
         },
+
         confidenceScore: {
           type: Number,
           min: 0,
           max: 1,
           default: 0
         },
+
         flagged: {
+          type: Boolean,
+          default: false
+        },
+
+        responded: {              
           type: Boolean,
           default: false
         }
