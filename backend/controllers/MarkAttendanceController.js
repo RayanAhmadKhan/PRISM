@@ -5,9 +5,12 @@ import FormData from "form-data";
 
 export const markAttendance = async (req, res) => {
     try{
-        const { studentRollNumber, attendanceId, status } = req.body;
+        const { studentRollNumber, attendanceId, method } = req.body;
         const attendanceRecord = await Attendance.findById(attendanceId);
         const student = await Students.findOne({ rollNumber: studentRollNumber });
+        if (method !== "face" && method !== "fingerprint"){
+            return res.status(400).json({ message: "Invalid attendance marking method" });
+        }
         if(!student){
             return res.status(404).json({ message: "Student not found" });
         }
@@ -26,19 +29,17 @@ export const markAttendance = async (req, res) => {
             return res.status(400).json({ message: "Attendance already marked for this student" });
         }
 
-        // Call FastAPI realtime attendance verification with retry logic
         let response = null;
         let confidenceScore = 0;
         let maxRetries = 3;
         let retryCount = 0;
 
         try {
-            // Retry loop: max 3 attempts
             while (retryCount < maxRetries) {
                 try {
                     const formData = new FormData();
                     formData.append("user_id", studentRollNumber);
-                    formData.append("modality", "face");
+                    formData.append("modality", method);
                     formData.append("timeout_seconds", 8);
                     formData.append("show_preview", "false");
 
@@ -50,12 +51,9 @@ export const markAttendance = async (req, res) => {
 
                     console.log(`Attempt ${retryCount + 1}: Verification result:`, response.data);
 
-                    // Extract confidence score from response
                     confidenceScore = response.data.result?.trust_evaluation || 0;
                     console.log(`Confidence Score: ${confidenceScore}%`);
 
-                    // Logic:
-                    // 1. If confidence < 50: Mark as Absent immediately (no retry)
                     if (confidenceScore < 50) {
                         studentRecord.status = "Absent";
                         studentRecord.confidenceScore = confidenceScore;
@@ -63,7 +61,6 @@ export const markAttendance = async (req, res) => {
                         console.log(`Low confidence (${confidenceScore}%). Attendance marked as Absent.`);
                         break;
                     }
-                    // 2. If confidence >= 75: Mark as Present
                     else if (confidenceScore >= 75) {
                         studentRecord.status = "Present";
                         studentRecord.confidenceScore = confidenceScore;
@@ -71,7 +68,6 @@ export const markAttendance = async (req, res) => {
                         console.log(`Attendance marked as Present with confidence: ${confidenceScore}%`);
                         break;
                     }
-                    // 3. If 50 <= confidence < 75: Retry (up to 3 attempts)
                     else {
                         retryCount++;
                         console.log(`Confidence in range [50-75) (${confidenceScore}%). Retry ${retryCount}/${maxRetries}`);
