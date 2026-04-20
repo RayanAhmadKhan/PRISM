@@ -21,6 +21,8 @@ import addStudentInSectionRoute from "./routes/AddStudentInSectionRoute.js";
 import loginUserRoute from "./routes/loginUserRoute.js";
 import getFlaggedCasesRoute from "./routes/getFlaggedCasesRoute.js";
 import flagApprovalRoute from "./routes/flagApprovalRoute.js";
+import markAttendanceRoute from "./routes/MarkAttendanceRoute.js";
+
 
 env.config();
 
@@ -49,6 +51,7 @@ app.use("/addStudentInSection", addStudentInSectionRoute);
 app.use("/loginUser", loginUserRoute);
 app.use("/getFlaggedCases", getFlaggedCasesRoute);
 app.use("/flagApproval", flagApprovalRoute);
+app.use("/markAttendance", markAttendanceRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });

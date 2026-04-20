@@ -23,20 +23,30 @@ const attendanceSchema = new mongoose.Schema(
 
         status: {
           type: String,
-          enum: ["Present", "Absent"],
+          enum: ["Present", "Absent", "Flagged"],
           default: "Absent"
         },
 
         confidenceScore: {
           type: Number,
           min: 0,
-          max: 1,
+          max: 100,
           default: 0
         },
 
         flagged: {
           type: Boolean,
           default: false
+        },
+
+        flagReason: {
+          type: String,
+          default: null
+        },
+
+        verificationResult: {
+          type: mongoose.Schema.Types.Mixed,
+          default: null
         },
 
         responded: {              
