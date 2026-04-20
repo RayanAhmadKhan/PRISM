@@ -22,15 +22,7 @@ const studentSchema = new mongoose.Schema({
     sections:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sections'
-    }],
-    fingerprintData:{
-        type: Buffer,
-        required: true
-    },
-    faceData:{
-        type: Buffer,
-        required: true
-    }
+    }]
 })
 
 const Students =  mongoose.models.Students || mongoose.model('Students', studentSchema);
