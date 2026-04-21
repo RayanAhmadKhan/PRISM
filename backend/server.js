@@ -23,6 +23,7 @@ import getFlaggedCasesRoute from "./routes/getFlaggedCasesRoute.js";
 import flagApprovalRoute from "./routes/flagApprovalRoute.js";
 import markAttendanceRoute from "./routes/MarkAttendanceRoute.js";
 import changeSectionRoute from "./routes/changeSectionRoute.js";
+import changeCourseInfoRoute from "./routes/changeCourseInfoRoute.js";
 
 
 env.config();
@@ -54,6 +55,7 @@ app.use("/getFlaggedCases", getFlaggedCasesRoute);
 app.use("/flagApproval", flagApprovalRoute);
 app.use("/markAttendance", markAttendanceRoute);
 app.use("/changeSection", changeSectionRoute);
+app.use("/changeCourseInfo", changeCourseInfoRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
