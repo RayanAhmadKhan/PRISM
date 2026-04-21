@@ -41,7 +41,7 @@ export const markAttendance = async (req, res) => {
                     formData.append("user_id", studentRollNumber);
                     formData.append("modality", method);
                     formData.append("timeout_seconds", 8);
-                    formData.append("show_preview", "false");
+                    formData.append("show_preview", "False");
 
                     response = await axios.post(
                         "http://localhost:8000/api/attendance/realtime",
@@ -50,8 +50,8 @@ export const markAttendance = async (req, res) => {
                     );
 
                     console.log(`Attempt ${retryCount + 1}: Verification result:`, response.data);
-
-                    confidenceScore = response.data.result?.trust_evaluation || 0;
+                    
+                    confidenceScore = response.data.result?.trust_evaluation?.score || 0;
                     console.log(`Confidence Score: ${confidenceScore}%`);
 
                     if (confidenceScore < 50) {
@@ -73,7 +73,6 @@ export const markAttendance = async (req, res) => {
                         console.log(`Confidence in range [50-75) (${confidenceScore}%). Retry ${retryCount}/${maxRetries}`);
                         
                         if (retryCount >= maxRetries) {
-                            // After 3 failed attempts with confidence in [50-75), flag attendance
                             studentRecord.status = "Flagged";
                             studentRecord.confidenceScore = confidenceScore;
                             studentRecord.verificationResult = response.data.result;
@@ -84,7 +83,7 @@ export const markAttendance = async (req, res) => {
                     }
                 } catch (axiosErr) {
                     retryCount++;
-                    console.error(`Attempt ${retryCount} failed:`, axiosErr.message);
+                    console.error(`Attempt ${retryCount} failed:`, axiosErr);
                     
                     if (retryCount >= maxRetries) {
                         throw new Error(`Verification failed after ${maxRetries} attempts: ${axiosErr.message}`);
@@ -93,7 +92,7 @@ export const markAttendance = async (req, res) => {
             }
         } catch (verifyErr) {
             console.error("Attendance verification error:", verifyErr.message);
-            return res.status(500).json({ 
+            return res.status(400).json({ 
                 message: "Attendance verification failed", 
                 error: verifyErr.message 
             });
