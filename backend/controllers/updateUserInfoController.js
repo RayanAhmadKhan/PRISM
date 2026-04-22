@@ -8,17 +8,12 @@ export const updateUserInfo = async (req, res) => {
 
     let user;
     if (type === "student") {
-      // Check if userID is a rollNumber (like "23L-0742") or ObjectId
-      // If it contains non-hex characters, treat it as rollNumber
-      if (!/^[0-9a-fA-F]{24}$/.test(userID)) {
         user = await Students.findOne({ rollNumber: userID });
-      } else {
-        user = await Students.findById(userID);
-      }
+    
     } else if (type === "admin") {
-      user = await Admin.findById(userID);
+      user = await Admin.findById({adminID: userID});
     } else if (type === "instructor") {
-      user = await Instructor.findById(userID);
+      user = await Instructor.findById({instructorID: userID});
     }
 
     if (!user) {
