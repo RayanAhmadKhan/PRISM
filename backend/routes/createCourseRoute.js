@@ -1,6 +1,8 @@
 import {createCourse} from "../controllers/createCourseController.js";
 import express from "express";
+import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-router.post("/", createCourse);
+// Admin only - Create Course
+router.post("/", verifyToken, checkRole(["admin"]), createCourse);
 export default router;
