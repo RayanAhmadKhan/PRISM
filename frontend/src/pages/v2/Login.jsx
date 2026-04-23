@@ -1,74 +1,88 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      setError("Please fill in all fields.");
+
+    if (!id || !password) {
+      setError("Please fill all fields");
       return;
     }
-    setError("");
-    console.log("Logging in with:", { username, password, rememberMe });
+
+    try {
+      setError("");
+
+      const res = await axios.post("http://localhost:5000/loginUser", {
+        id,
+        password
+      });
+
+      const token = res.data.token;
+
+      // decode token
+      const decoded = jwtDecode(token);
+
+      // store auth data
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", decoded.type);
+
+      // redirect based on role
+      if (decoded.type === "admin") {
+        window.location.href = "/pages/v2/AdminDash";
+      } else if (decoded.type === "instructor") {
+        window.location.href = "/pages/v2/TeacherDash";
+      } else {
+        window.location.href = "/pages/v2/StudentDash";
+      }
+
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
-    <div className='flex justify-center items-center min-h-dvh w-full bg-blue-950 px-4'>
-      <div className="login-container border-2 border-gray-600 flex gap-8 md:gap-10 m-5 p-5 flex-col rounded-md justify-center items-center bg-zinc-900 h-auto md:h-130 w-full max-w-sm md:w-100">
-        <div className="headings flex gap-3 justify-center items-center flex-col">
-          <h1 className='text-blue-400 font-bold text-2xl'>PRISM</h1>
-          <h1 className='text-gray-300 font-bold text-2xl'>Login</h1>
-        </div>
-        <div className="form">
-          <form className='flex flex-col gap-5 justify-center items-center'>
-            <input
-              className='w-full max-w-xs md:w-80 h-10 bg-gray-600 rounded-sm p-2 text-white'
-              type="text"
-              placeholder='Username / Email'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              className='w-full max-w-xs md:w-80 h-10 bg-gray-600 rounded-sm p-2 text-white'
-              type="password"
-              placeholder='Password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </form>
-        </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <div className="after-form flex justify-between gap-5 md:gap-20 items-center w-full max-w-xs md:w-80">
-          <div className="checkbox flex justify-between items-center gap-2">
-            <input
-              type="checkbox"
-              className='w-3 h-3'
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            <p className='text-gray-300 text-sm'>Remember me</p>
-          </div>
-          <div className="forgot">
-            <a className='text-blue-400 text-sm' href="#forgot">Forgot?</a>
-          </div>
-        </div>
-        <div className="button w-full max-w-xs md:w-80">
+    <div className="flex justify-center items-center min-h-screen bg-blue-950">
+      <div className="bg-zinc-900 p-6 rounded-md w-80 text-white">
+
+        <h1 className="text-center text-xl font-bold text-blue-400 mb-5">
+          PRISM LOGIN
+        </h1>
+
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+
+          <input
+            type="text"
+            placeholder="ID"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+            className="p-2 bg-gray-700 rounded"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-2 bg-gray-700 rounded"
+          />
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
-            onClick={handleLogin}
-            className='bg-blue-700 px-5 py-2 m-1 w-full font-bold rounded-sm cursor-pointer hover:bg-blue-900'
+            type="submit"
+            className="bg-blue-600 py-2 rounded hover:bg-blue-800"
           >
-            LOGIN
+            Login
           </button>
-        </div>
-        <div className="new-acc flex items-center gap-2">
-          <p className='text-gray-300 text-sm md:text-base'>New here?</p>
-          <Link to="/pages/v2/Signup" className='text-blue-400 underline text-sm md:text-base'>Create Account</Link>
-        </div>
+
+        </form>
       </div>
     </div>
   )
