@@ -3,24 +3,63 @@ import Admin from "../models/admin.js";
 import Instructor from "../models/instructors.js";
 import { generateToken } from "../middleware/authMiddleware.js";
 
+// Function to determine user type based on ID format using regex
+const identifyUserTypeByID = (id) => {
+  // Admin ID pattern (typically starts with 'A' or 'ADMIN')
+  const adminIDPattern = /^a\d+$|^admin/i;
+  
+  // Student roll number pattern (typically alphanumeric, e.g., "CS-2021-001" or "21-0001")
+  const studentIDPattern = /^\d{4}-\d{4}$|^[A-Z] {2,}-\d{4}-\d{3,4}$/i;
+  
+  // Instructor ID pattern (typically starts with 'I' or 'INSTR')
+  const instructorIDPattern = /^i\d+$|^instr/i;
+
+  if (adminIDPattern.test(id)) {
+    return { type: "admin", field: "adminID" };
+  } else if (studentIDPattern.test(id)) {
+    return { type: "student", field: "rollNumber" };
+  } else if (instructorIDPattern.test(id)) {
+    return { type: "instructor", field: "instructorID" };
+  }
+  
+  return null;
+};
+
 export const loginUser = async (req, res) => {
-  const { type, email, password } = req.body;
+  const { id, password } = req.body;
+
+  // Validate input
+  if (!id || !password) {
+    return res.status(400).json({ message: "ID and password are required." });
+  }
 
   const models = {
     student: Students,
     admin: Admin,
     instructor: Instructor
   };
-  const model = models[type];
-
-  if (!model) {
-    return res.status(400).json({ message: "Invalid user type." });
-  }
 
   try {
-    const user = await model.findOne({ email });
+    // Identify user type based on ID format
+    const userIdentity = identifyUserTypeByID(id);
+    
+    if (!userIdentity) {
+      return res.status(400).json({ 
+        message: "Invalid ID format. Could not determine user type." 
+      });
+    }
+    console.log("Identified User Type:", userIdentity);
+    const { type, field } = userIdentity;
+    const model = models[type];
+    const user = await model.findOne({ [field]: id });
+    
     if (!user) {
       return res.status(404).json({ message: "User not found." });
+    }
+
+    // Verify that the provided ID matches the user's ID field
+    if (user[field] !== id) {
+      return res.status(401).json({ message: "Invalid credentials. ID does not match." });
     }
 
     // Compare hashed password
