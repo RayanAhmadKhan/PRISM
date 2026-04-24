@@ -7,7 +7,7 @@ export const allUsers = async (req, res) => {
         const [students, instructors, admins] = await Promise.all([
             Students.find({}, "name rollNumber email"),
             Instructor.find({}, "name instructorID email"),
-            Admin.find({}, "name email")
+            Admin.find({}, "name adminID email")
         ]);
 
         res.status(200).json({ students, instructors, admins });

@@ -4,5 +4,5 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 // Admin only - Create Course
-router.post("/", verifyToken, checkRole(["admin"]), createCourse);
+router.post("/", verifyToken, checkRole("admin"), createCourse);
 export default router;

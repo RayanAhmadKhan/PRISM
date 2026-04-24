@@ -4,5 +4,5 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 // Instructor only - Delete Attendance
-router.delete("/", verifyToken, checkRole(["instructor"]), deleteAttendanceRecord);
+router.delete("/", verifyToken, checkRole("instructor"), deleteAttendanceRecord);
 export default router;

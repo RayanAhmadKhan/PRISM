@@ -4,13 +4,15 @@ export const getAttendanceRecord = async (req, res) => {
   try {
     const { sectionId, date, markedBy, studentId } = req.query;
 
-    if (!sectionId) {
-      return res
-        .status(400)
-        .json({ message: "sectionId is required" });
+    let query = {};
+
+    if (sectionId) {
+      query.section = sectionId;
     }
 
-    let query = { section: sectionId, date: date || new Date().toISOString().split("T")[0] };
+    if (date) {
+      query.date = date;
+    }
 
     if (markedBy) {
       query.markedBy = markedBy;
@@ -20,24 +22,51 @@ export const getAttendanceRecord = async (req, res) => {
       query["students.student"] = studentId;
     }
 
-    const attendanceRecord = await Attendance.findOne(query)
+    const attendanceRecords = await Attendance.find(query)
       .populate("students.student", "name rollNumber")
-      .populate("markedBy", "name");
+      .populate("markedBy", "name")
+      .populate({
+        path: "section",
+        select: "sectionName courseCode",
+        populate: {
+          path: "courseCode",
+          select: "courseCode courseName"
+        }
+      });
 
-    if (!attendanceRecord) {
-      return res.status(404).json({ message: "Attendance not found" });
+    // ✅ No data → return empty array (NOT 404)
+    if (!attendanceRecords || attendanceRecords.length === 0) {
+      return res.status(200).json([]);
     }
 
+    // ✅ If studentId is provided → return only that student's records
     if (studentId) {
-      const studentData = attendanceRecord.students.find(
-        s => s.student._id.toString() === studentId
-      );
+      const filteredData = attendanceRecords
+        .map(record => {
+          const studentData = record.students.find(
+            s => s.student._id.toString() === studentId
+          );
 
-      return res.status(200).json(studentData);
+          return studentData
+            ? {
+                _id: record._id,
+                section: record.section,
+                date: record.date,
+                markedBy: record.markedBy,
+                student: studentData
+              }
+            : null;
+        })
+        .filter(Boolean); // remove nulls
+
+      return res.status(200).json(filteredData);
     }
 
-    return res.status(200).json(attendanceRecord);
+    // ✅ Default → return full records
+    return res.status(200).json(attendanceRecords);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      message: error.message
+    });
   }
 };

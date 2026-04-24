@@ -4,5 +4,5 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const route = express.Router();
 // Admin only - Delete User
-route.delete("/", verifyToken, checkRole(["admin"]), deleteUser);
+route.delete("/", verifyToken, checkRole("admin"), deleteUser);
 export default route;

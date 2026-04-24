@@ -4,5 +4,5 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 // Admin only - Change Course Info
-router.patch("/", verifyToken, checkRole(["admin"]), changeCourseInfo);
+router.patch("/", verifyToken, checkRole("admin"), changeCourseInfo);
 export default router;

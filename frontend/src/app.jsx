@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Login from "./pages/v2/Login.jsx";
 import Signup from "./pages/v2/Signup.jsx";
 
-import AdminDash from "./pages/v2/AdminDash.jsx";
+import AdminDash from "./pages/v2/Admin/AdminDash.jsx";
 import TeacherDash from "./pages/v2/TeacherDash.jsx";
 import StudentDash from "./pages/v2/StudentDash.jsx";
 

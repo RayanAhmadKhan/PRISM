@@ -4,5 +4,5 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 // Admin only - Create Section
-router.post("/", verifyToken, checkRole(["admin"]), createSection);
+router.post("/", verifyToken, checkRole("admin"), createSection);
 export default router;

@@ -4,6 +4,6 @@ import { verifyToken, checkRole } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 // Both Instructor and Student can view attendance records
-router.get("/", verifyToken, checkRole(["instructor", "student"]), getAttendanceRecord);
+router.get("/", getAttendanceRecord);
 
 export default router;

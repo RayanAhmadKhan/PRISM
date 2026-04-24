@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar'
-import LeftNav from '../../components/LeftNav'
+import Navbar from '../../../components/Navbar'
+import LeftNav from '../../../components/LeftNav'
 
 const AdSettings = () => {
   const [faceSensitivity, setFaceSensitivity] = useState(75);
