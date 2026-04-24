@@ -9,16 +9,11 @@ export const updateUserInfo = async (req, res) => {
 
     let user;
     if (type === "student") {
-      // Check if userID is a rollNumber or ObjectId
-      if (!/^[0-9a-fA-F]{24}$/.test(userID)) {
-        user = await Students.findOne({ rollNumber: userID });
-      } else {
-        user = await Students.findById(userID);
-      }
+      user = await Students.findOne({ rollNumber: userID });
     } else if (type === "admin") {
-      user = await Admin.findById(userID);
+      user = await Admin.findOne({ adminID: userID });
     } else if (type === "instructor") {
-      user = await Instructor.findById(userID);
+      user = await Instructor.findOne({ instructorID: userID });
     }
 
     if (!user) {
@@ -32,13 +27,18 @@ export const updateUserInfo = async (req, res) => {
     }
 
     await user.save();
-    
+
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    res.json({ message: "User information updated successfully", user: userWithoutPassword });
+    res.json({
+      message: "User information updated successfully",
+      user: userWithoutPassword
+    });
   } catch (error) {
     console.error("Error updating user info:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };

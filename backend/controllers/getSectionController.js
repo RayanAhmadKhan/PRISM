@@ -19,7 +19,8 @@ export const getSectionController = async (req, res) => {
 
     const sections = await Section.find(filter)
       .populate("courseCode", "courseCode courseName")
-      .populate("instructor", "name instructorID");
+      .populate("instructor", "name instructorID")
+      .populate("students", "name rollNumber");
 
     return res.status(200).json({
       sections

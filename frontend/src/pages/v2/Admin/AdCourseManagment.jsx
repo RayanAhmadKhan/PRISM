@@ -6,9 +6,15 @@ const CourseManagement = () => {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [showModal, setShowModal] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingCourse, setEditingCourse] = useState(null)
   const [formData, setFormData] = useState({
     courseCode: '',
+    courseName: '',
+    creditHours: ''
+  })
+  const [editFormData, setEditFormData] = useState({
     courseName: '',
     creditHours: ''
   })
@@ -21,7 +27,7 @@ const CourseManagement = () => {
     try {
       setLoading(true)
       const token = localStorage.getItem('token')
-      
+
       const response = await fetch('http://localhost:5000/getCourse', {
         method: 'GET',
         headers: {
@@ -30,25 +36,20 @@ const CourseManagement = () => {
         }
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch courses')
-      }
+      if (!response.ok) throw new Error('Failed to fetch courses')
 
       const data = await response.json()
-      console.log('Fetched courses:', data)
       const formattedCourses = (data.courses || []).map(course => ({
         id: course._id,
         courseCode: course.courseCode,
         courseName: course.courseName,
         creditHours: course.creditHours || 'N/A',
-        status: 'Active',
-        action: 'Edit'
+        status: 'Active'
       }))
 
       setCourses(formattedCourses)
       setError(null)
     } catch (err) {
-      console.error('Error fetching courses:', err)
       setError('Failed to load courses')
     } finally {
       setLoading(false)
@@ -59,7 +60,7 @@ const CourseManagement = () => {
     e.preventDefault()
     try {
       const token = localStorage.getItem('token')
-      
+
       const response = await fetch('http://localhost:5000/createCourse', {
         method: 'POST',
         headers: {
@@ -75,39 +76,81 @@ const CourseManagement = () => {
       }
 
       setSuccess('Course added successfully!')
-      setShowModal(false)
+      setShowAddModal(false)
       setFormData({ courseCode: '', courseName: '', creditHours: '' })
       fetchCourses()
       setTimeout(() => setSuccess(null), 3000)
     } catch (err) {
-      console.error('Error adding course:', err)
       setError(err.message || 'Failed to add course')
+    }
+  }
+
+  // Opens the edit modal and pre-fills the form with the selected course's data
+  const handleEditCourse = (course) => {
+    setEditingCourse(course)
+    setEditFormData({
+      courseName: course.courseName,
+      creditHours: course.creditHours === 'N/A' ? '' : course.creditHours
+    })
+    setShowEditModal(true)
+  }
+
+  const handleUpdateCourse = async (e) => {
+    e.preventDefault()
+    try {
+      const token = localStorage.getItem('token')
+
+      // Build body — courseCode is always sent; name/creditHours only if filled
+      const body = {
+        courseCode: editingCourse.courseCode,
+        ...(editFormData.courseName.trim() && { courseName: editFormData.courseName.trim() }),
+        ...(editFormData.creditHours !== '' && { creditHours: editFormData.creditHours })
+      }
+
+      const response = await fetch('http://localhost:5000/changeCourseInfo', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (!response.ok) {
+        const errData = await response.json()
+        throw new Error(errData.message || 'Failed to update course')
+      }
+
+      setSuccess('Course updated successfully!')
+      setShowEditModal(false)
+      setEditingCourse(null)
+      fetchCourses()
+      setTimeout(() => setSuccess(null), 3000)
+    } catch (err) {
+      setError(err.message || 'Failed to update course')
     }
   }
 
   const handleDeleteCourse = async (courseCode) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return
-    
+
     try {
       const token = localStorage.getItem('token')
-      
+
       const response = await fetch(`http://localhost:5000/deleteCourse?courseCode=${courseCode}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
+        }
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to delete course')
-      }
+      if (!response.ok) throw new Error('Failed to delete course')
 
       setSuccess('Course deleted successfully!')
       fetchCourses()
       setTimeout(() => setSuccess(null), 3000)
     } catch (err) {
-      console.error('Error deleting course:', err)
       setError('Failed to delete course')
     }
   }
@@ -141,8 +184,8 @@ const CourseManagement = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button 
-            onClick={() => setShowModal(true)}
+          <button
+            onClick={() => setShowAddModal(true)}
             className='bg-blue-700 w-full sm:w-35 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
           >
             + Add Course
@@ -170,8 +213,14 @@ const CourseManagement = () => {
                   <td className='p-3'>{course.courseName}</td>
                   <td className='p-3'>{course.creditHours}</td>
                   <td className='p-3'><span className='bg-green-900 px-2 py-1 rounded'>{course.status}</span></td>
-                  <td className='p-3'>
-                    <button 
+                  <td className='p-3 flex gap-2'>
+                    <button
+                      onClick={() => handleEditCourse(course)}
+                      className='bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm font-bold'
+                    >
+                      Edit
+                    </button>
+                    <button
                       onClick={() => handleDeleteCourse(course.courseCode)}
                       className='bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-bold'
                     >
@@ -189,20 +238,20 @@ const CourseManagement = () => {
         </table>
       </div>
 
-      {/* Add Course Modal */}
-      {showModal && (
+      {/* ── Add Course Modal ── */}
+      {showAddModal && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3'>
           <div className='bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-md'>
             <h2 className='text-xl md:text-2xl font-bold mb-5'>Add New Course</h2>
-            
+
             <form onSubmit={handleAddCourse} className='flex flex-col gap-4'>
               <div>
                 <label className='block text-sm font-semibold mb-2'>Course Code</label>
-                <input 
+                <input
                   type='text'
                   required
                   value={formData.courseCode}
-                  onChange={(e) => setFormData({...formData, courseCode: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, courseCode: e.target.value })}
                   className='w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white'
                   placeholder='e.g., CS101'
                 />
@@ -210,11 +259,11 @@ const CourseManagement = () => {
 
               <div>
                 <label className='block text-sm font-semibold mb-2'>Course Name</label>
-                <input 
+                <input
                   type='text'
                   required
                   value={formData.courseName}
-                  onChange={(e) => setFormData({...formData, courseName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
                   className='w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white'
                   placeholder='Enter course name'
                 />
@@ -222,26 +271,89 @@ const CourseManagement = () => {
 
               <div>
                 <label className='block text-sm font-semibold mb-2'>Credit Hours</label>
-                <input 
+                <input
                   type='number'
                   required
                   value={formData.creditHours}
-                  onChange={(e) => setFormData({...formData, creditHours: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, creditHours: e.target.value })}
                   className='w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white'
                   placeholder='e.g., 3'
                 />
               </div>
 
               <div className='flex gap-3 mt-5'>
-                <button 
+                <button
                   type='submit'
                   className='flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold'
                 >
                   Add Course
                 </button>
-                <button 
+                <button
                   type='button'
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowAddModal(false)}
+                  className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold'
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Course Modal ── */}
+      {showEditModal && editingCourse && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3'>
+          <div className='bg-zinc-900 border-2 border-yellow-600 rounded-lg p-5 md:p-8 w-full max-w-md'>
+            <h2 className='text-xl md:text-2xl font-bold mb-1'>Edit Course</h2>
+            <p className='text-gray-400 text-sm mb-5'>
+              Editing: <span className='text-yellow-400 font-semibold'>{editingCourse.courseCode}</span> — only fill fields you want to update.
+            </p>
+
+            <form onSubmit={handleUpdateCourse} className='flex flex-col gap-4'>
+              {/* Course Code — read-only, auto-filled */}
+              <div>
+                <label className='block text-sm font-semibold mb-2'>Course Code</label>
+                <input
+                  type='text'
+                  disabled
+                  value={editingCourse.courseCode}
+                  className='w-full bg-zinc-700 p-2 border-2 border-gray-600 rounded text-gray-400 cursor-not-allowed'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-semibold mb-2'>Course Name</label>
+                <input
+                  type='text'
+                  value={editFormData.courseName}
+                  onChange={(e) => setEditFormData({ ...editFormData, courseName: e.target.value })}
+                  className='w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none'
+                  placeholder='Leave blank to keep current'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-semibold mb-2'>Credit Hours</label>
+                <input
+                  type='number'
+                  value={editFormData.creditHours}
+                  onChange={(e) => setEditFormData({ ...editFormData, creditHours: e.target.value })}
+                  className='w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none'
+                  placeholder='Leave blank to keep current'
+                />
+              </div>
+
+              <div className='flex gap-3 mt-5'>
+                <button
+                  type='submit'
+                  className='flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold'
+                >
+                  Update Course
+                </button>
+                <button
+                  type='button'
+                  onClick={() => { setShowEditModal(false); setEditingCourse(null) }}
                   className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold'
                 >
                   Cancel

@@ -1,0 +1,350 @@
+import React, { useState, useEffect } from "react";
+
+const AdChangeSection = () => {
+  const [courses, setCourses] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [sectionsLoading, setSectionsLoading] = useState(false);
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
+
+  const [formData, setFormData] = useState({
+    rollNumber: "",
+    courseId: "",
+    oldSectionName: "",
+    newSectionName: ""
+  });
+
+  // Fetch all courses on mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/getCourse", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Failed to fetch courses");
+        const data = await res.json();
+        setCourses(data.courses || []);
+      } catch (err) {
+        setError("Failed to load courses. Please refresh.");
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  // Fetch sections whenever a course is selected
+  useEffect(() => {
+    if (!formData.courseId) {
+      setSections([]);
+      setFormData((prev) => ({
+        ...prev,
+        oldSectionName: "",
+        newSectionName: ""
+      }));
+      return;
+    }
+
+    const fetchSections = async () => {
+      try {
+        setSectionsLoading(true);
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          `http://localhost:5000/getSection?courseId=${formData.courseId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        if (!res.ok) throw new Error("Failed to fetch sections");
+        const data = await res.json();
+        setSections(data.sections || []);
+        setFormData((prev) => ({
+          ...prev,
+          oldSectionName: "",
+          newSectionName: ""
+        }));
+      } catch (err) {
+        setError("Failed to load sections for this course.");
+      } finally {
+        setSectionsLoading(false);
+      }
+    };
+
+    fetchSections();
+  }, [formData.courseId]);
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear messages on input change
+    setError(null);
+    setSuccess(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { rollNumber, courseId, oldSectionName, newSectionName } = formData;
+
+    if (!rollNumber.trim()) {
+      setError("Please enter a student roll number.");
+      return;
+    }
+    if (!courseId) {
+      setError("Please select a course.");
+      return;
+    }
+    if (!oldSectionName) {
+      setError("Please select the student's current section.");
+      return;
+    }
+    if (!newSectionName) {
+      setError("Please select the target section.");
+      return;
+    }
+    if (oldSectionName === newSectionName) {
+      setError("Old and new sections cannot be the same.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:5000/changeSection", {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          rollNumber: rollNumber.trim(),
+          courseId,
+          oldSectionName,
+          newSectionName
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to change section");
+
+      setSuccess(
+        `Student ${rollNumber.trim()} successfully moved from "${oldSectionName}" to "${newSectionName}".`
+      );
+      // Reset form but keep course selected for convenience
+      setFormData((prev) => ({
+        ...prev,
+        rollNumber: "",
+        oldSectionName: "",
+        newSectionName: ""
+      }));
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      rollNumber: "",
+      courseId: "",
+      oldSectionName: "",
+      newSectionName: ""
+    });
+    setSections([]);
+    setError(null);
+    setSuccess(null);
+  };
+
+  const selectedCourse = courses.find((c) => c._id === formData.courseId);
+  return (
+    <div className="p-3 md:p-5 flex flex-col gap-5">
+      {/* Header */}
+      <div className="flex flex-col gap-1">
+        <h1 className="font-bold text-lg md:text-xl text-white">
+          Change Student Section
+        </h1>
+        <p className="text-gray-400 text-sm">
+          Move a student from one section to another within the same course.
+        </p>
+      </div>
+
+      {/* Alerts */}
+      {success && (
+        <div className="bg-green-900 border-2 border-green-600 p-3 rounded text-green-200 flex items-start gap-2">
+          <span className="mt-0.5">✅</span>
+          <span>{success}</span>
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-900 border-2 border-red-600 p-3 rounded text-red-200 flex items-start gap-2">
+          <span className="mt-0.5">⚠️</span>
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Form Card */}
+      <div className="bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-xl">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {/* Step 1 — Roll Number */}
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-gray-200">
+              <span className="text-blue-400 mr-2">01</span> Student Roll Number
+            </label>
+            <input
+              type="text"
+              value={formData.rollNumber}
+              onChange={(e) => handleChange("rollNumber", e.target.value)}
+              className="w-full bg-zinc-800 p-2.5 border-2 border-gray-600 rounded text-white focus:border-blue-500 outline-none transition"
+              placeholder="e.g. 2021-CS-101"
+            />
+          </div>
+
+          {/* Step 2 — Course */}
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-gray-200">
+              <span className="text-blue-400 mr-2">02</span> Select Course
+            </label>
+            <select
+              value={formData.courseId}
+              onChange={(e) => handleChange("courseId", e.target.value)}
+              className="w-full bg-zinc-800 p-2.5 border-2 border-gray-600 rounded text-white focus:border-blue-500 outline-none transition"
+            >
+              <option value="">— Choose a course —</option>
+              {courses.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.courseCode} · {course.courseName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sections — only show once a course is selected */}
+          {formData.courseId && (
+            <>
+              {sectionsLoading ? (
+                <p className="text-gray-400 text-sm">Loading sections...</p>
+              ) : sections.length === 0 ? (
+                <div className="bg-yellow-900 border border-yellow-600 text-yellow-200 text-sm p-3 rounded">
+                  No sections found for{" "}
+                  <strong>{selectedCourse?.courseName}</strong>.
+                </div>
+              ) : (
+                <>
+                  {/* Step 3 — Current Section */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-200">
+                      <span className="text-blue-400 mr-2">03</span> Current
+                      Section
+                    </label>
+                    <select
+                      value={formData.oldSectionName}
+                      onChange={(e) =>
+                        handleChange("oldSectionName", e.target.value)
+                      }
+                      className="w-full bg-zinc-800 p-2.5 border-2 border-gray-600 rounded text-white focus:border-blue-500 outline-none transition"
+                    >
+                      <option value="">— Select current section —</option>
+                      {sections.map((section) => (
+                        <option key={section._id} value={section.sectionName}>
+                          {section.sectionName}
+                          {section.semester ? ` · ${section.semester}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Step 4 — New Section */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-200">
+                      <span className="text-blue-400 mr-2">04</span> New Section
+                    </label>
+                    <select
+                      value={formData.newSectionName}
+                      onChange={(e) =>
+                        handleChange("newSectionName", e.target.value)
+                      }
+                      className="w-full bg-zinc-800 p-2.5 border-2 border-gray-600 rounded text-white focus:border-blue-500 outline-none transition"
+                    >
+                      <option value="">— Select target section —</option>
+                      {sections
+                        .filter(
+                          (s) => s.sectionName !== formData.oldSectionName
+                        )
+                        .map((section) => (
+                          <option key={section._id} value={section.sectionName}>
+                            {section.sectionName}
+                            {section.semester ? ` · ${section.semester}` : ""}
+                          </option>
+                        ))}
+                    </select>
+                    {formData.oldSectionName &&
+                      sections.filter(
+                        (s) => s.sectionName !== formData.oldSectionName
+                      ).length === 0 && (
+                        <p className="text-yellow-400 text-xs mt-1">
+                          No other sections available for this course.
+                        </p>
+                      )}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Summary preview */}
+          {formData.rollNumber &&
+            formData.oldSectionName &&
+            formData.newSectionName && (
+              <div className="bg-zinc-800 border border-blue-700 rounded p-3 text-sm text-gray-300">
+                <p className="font-semibold text-blue-300 mb-1">
+                  Transfer Summary
+                </p>
+                <p>
+                  Student:{" "}
+                  <span className="text-white font-mono">
+                    {formData.rollNumber}
+                  </span>
+                </p>
+                <p>
+                  Course:{" "}
+                  <span className="text-white">
+                    {selectedCourse?.courseName}
+                  </span>
+                </p>
+                <p>
+                  Moving:{" "}
+                  <span className="text-red-400 font-semibold">
+                    {formData.oldSectionName}
+                  </span>
+                  {" → "}
+                  <span className="text-green-400 font-semibold">
+                    {formData.newSectionName}
+                  </span>
+                </p>
+              </div>
+            )}
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-900 disabled:cursor-not-allowed p-2.5 rounded font-bold text-white transition"
+            >
+              {loading ? "Changing Section..." : "Change Section"}
+            </button>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 p-2.5 rounded font-bold text-white transition"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AdChangeSection;
