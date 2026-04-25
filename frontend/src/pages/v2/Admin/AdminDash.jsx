@@ -91,7 +91,7 @@ const AdminDash = () => {
 
   const StatCard = ({ title, value, icon, color }) => (
     <div
-      className={`flex flex-col gap-3 p-4 md:p-6 bg-${color}-900 border-2 border-${color}-600 rounded-lg flex-1 min-w-[200px]`}
+      className={`flex flex-col gap-3 p-4 md:p-6 bg-${color}-900 border-2 border-${color}-600 rounded-lg flex-1 min-w-50`}
     >
       <div className="flex justify-between items-center">
         <h3 className="text-sm md:text-base font-semibold text-gray-300">{title}</h3>

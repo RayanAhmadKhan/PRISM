@@ -5,7 +5,7 @@ const LeftNav = (props) => {
     const getNavPath = (btnLabel) => {
         const paths = {
             "Student Dashboard":  "/pages/v2/StudentDash",
-            "Teacher Dashboard":  "/pages/v2/TeacherDash",
+            "Teacher Dashboard":  "/pages/v2/Instructor/TeacherDash",
             "Admin Dashboard":    "/pages/v2/Admin/AdminDash",
 
             // student dash buttons
@@ -14,8 +14,8 @@ const LeftNav = (props) => {
             "Profile":            "/pages/v2/StProfile",
 
             // teacher dash buttons
-            "Attendance Record":  "/pages/v2/TchAttendance",
-            "Profile Settings":   "/pages/v2/TchProfile",
+            "Attendance Record":  "/pages/v2/Instructor/TchAttendance",
+            "Profile Settings":   "/pages/v2/Instructor/TchProfile",
 
             // admin dash buttons (internal navigation)
             "User Management":    "admin-users",
@@ -35,7 +35,7 @@ const LeftNav = (props) => {
             if (props.onTabChange) {
                 props.onTabChange('flagged');
             } else {
-                window.location.href = "/pages/v2/TchCase";
+                window.location.href = "/pages/v2/Instructor/TchCase";
             }
             return;
         }
