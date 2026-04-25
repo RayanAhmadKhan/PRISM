@@ -38,7 +38,7 @@ export const createAttendanceRecord = async (req, res) => {
       markedBy,
       students,
       startTime: now,
-      endTime: new Date(now.getTime() + 15 * 60 * 1000),
+      endTime: new Date(now.getTime() + 30 * 60 * 1000),
       status: "open"
     });
 

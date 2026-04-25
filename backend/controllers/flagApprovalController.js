@@ -18,13 +18,15 @@ export const flagApproval = async (req, res) => {
         .status(404)
         .json({ message: "Student not found in attendance record" });
     }
-    if(student.flagged === false && action === "approve") {
+    if(student.flagged === false && action === "accept") {
       return res.status(400).json({ message: "Student is not flagged" });
     }
-    if (action === "approve") {
+    if (action === "accept") {
       student.flagged = false;
+      student.status = "Present";
     } else if (action === "reject") {
-      student.flagged = true;
+      student.flagged = false;
+      student.status = "Absent";
     } else {
       return res.status(400).json({ message: "Invalid action" });
     }

@@ -2,7 +2,7 @@ import Attendance from "../models/attendance.js";
 
 export const getAttendanceRecord = async (req, res) => {
   try {
-    const { sectionId, date, markedBy, studentId } = req.query;
+    const { sectionId, date, markedBy, studentId, attendanceId } = req.query;
 
     let query = {};
 
@@ -20,6 +20,9 @@ export const getAttendanceRecord = async (req, res) => {
 
     if (studentId) {
       query["students.student"] = studentId;
+    }
+    if (attendanceId) {
+      query._id = attendanceId;
     }
 
     const attendanceRecords = await Attendance.find(query)
