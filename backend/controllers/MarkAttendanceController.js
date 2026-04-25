@@ -41,7 +41,7 @@ export const markAttendance = async (req, res) => {
                     formData.append("user_id", studentRollNumber);
                     formData.append("modality", method);
                     formData.append("timeout_seconds", 8);
-                    formData.append("show_preview", "False");
+                    formData.append("show_preview", "True");
 
                     response = await axios.post(
                         "http://localhost:8000/api/attendance/realtime",
@@ -61,7 +61,7 @@ export const markAttendance = async (req, res) => {
                         console.log(`Low confidence (${confidenceScore}%). Attendance marked as Absent.`);
                         break;
                     }
-                    else if (confidenceScore >= 75) {
+                    else if (confidenceScore >= 60) {
                         studentRecord.status = "Present";
                         studentRecord.confidenceScore = confidenceScore;
                         studentRecord.verificationResult = response.data.result;
@@ -73,7 +73,8 @@ export const markAttendance = async (req, res) => {
                         console.log(`Confidence in range [50-75) (${confidenceScore}%). Retry ${retryCount}/${maxRetries}`);
                         
                         if (retryCount >= maxRetries) {
-                            studentRecord.status = "Flagged";
+                            studentRecord.status = "Absent";
+                            studentRecord.flagged = true;
                             studentRecord.confidenceScore = confidenceScore;
                             studentRecord.verificationResult = response.data.result;
                             studentRecord.flagReason = "Confidence score consistently between 50-75% after 3 verification attempts";

@@ -27,6 +27,7 @@ import changeCourseInfoRoute from "./routes/changeCourseInfoRoute.js";
 import updateUserInfoRoute from "./routes/updateUserInfoRoute.js";
 import removeStudentFromSection from "./routes/Removestuedentfromsection.js";
 import updateSectionRoute from "./routes/updateSectionRoute.js";
+import changePasswordRoute from "./routes/changePasswordRoute.js";
 env.config();
 
 const port = process.env.PORT || 3000;
@@ -60,6 +61,7 @@ app.use("/changeCourseInfo", changeCourseInfoRoute);
 app.use("/updateSection", updateSectionRoute);
 app.use("/updateUserInfo", updateUserInfoRoute);
 app.use("/removeStudentFromSection", removeStudentFromSection);
+app.use("/changePassword", changePasswordRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
