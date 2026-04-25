@@ -85,7 +85,6 @@ const CourseManagement = () => {
     }
   }
 
-  // Opens the edit modal and pre-fills the form with the selected course's data
   const handleEditCourse = (course) => {
     setEditingCourse(course)
     setEditFormData({
@@ -100,7 +99,6 @@ const CourseManagement = () => {
     try {
       const token = localStorage.getItem('token')
 
-      // Build body — courseCode is always sent; name/creditHours only if filled
       const body = {
         courseCode: editingCourse.courseCode,
         ...(editFormData.courseName.trim() && { courseName: editFormData.courseName.trim() }),
@@ -170,12 +168,11 @@ const CourseManagement = () => {
 
   return (
     <div className="p-3 md:p-5 flex flex-col gap-5">
-      {/* Success/Error Messages */}
       {success && <div className='bg-green-900 border-2 border-green-600 p-3 rounded text-green-200'>{success}</div>}
       {error && <div className='bg-red-900 border-2 border-red-600 p-3 rounded text-red-200'>{error}</div>}
 
       <div className="header w-full flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
-        <h1 className='font-bold text-lg md:text-xl'>Course Management</h1>
+        <h1 className='font-bold text-lg md:text-xl text-white'>Course Management</h1>
         <div className="side-btns flex flex-col sm:flex-row justify-center items-center gap-3">
           <input
             type="text"
@@ -186,43 +183,42 @@ const CourseManagement = () => {
           />
           <button
             onClick={() => setShowAddModal(true)}
-            className='bg-blue-700 w-full sm:w-35 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900'
+            className='bg-blue-700 w-full sm:w-35 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900 text-white'
           >
             + Add Course
           </button>
         </div>
       </div>
 
-      {/* Courses Table */}
-      <div className="overflow-x-auto border-2 border-gray-600 rounded-md">
-        <table className='w-full text-sm md:text-base'>
-          <thead className='bg-zinc-900 border-b-2 border-gray-600'>
-            <tr>
-              <th className='p-3 text-left font-bold'>Course Code</th>
-              <th className='p-3 text-left font-bold'>Course Name</th>
-              <th className='p-3 text-left font-bold'>Credit Hours</th>
-              <th className='p-3 text-left font-bold'>Status</th>
-              <th className='p-3 text-left font-bold'>Actions</th>
+      <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
+        <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+          <thead>
+            <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+              <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Course Code</th>
+              <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Course Name</th>
+              <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Credit Hours</th>
+              <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredCourses.length > 0 ? (
               filteredCourses.map((course, idx) => (
-                <tr key={idx} className='border-b border-gray-600 hover:bg-zinc-700'>
-                  <td className='p-3 font-semibold'>{course.courseCode}</td>
-                  <td className='p-3'>{course.courseName}</td>
-                  <td className='p-3'>{course.creditHours}</td>
-                  <td className='p-3'><span className='bg-green-900 px-2 py-1 rounded'>{course.status}</span></td>
-                  <td className='p-3 flex gap-2'>
+                <tr key={idx} className="border-b border-gray-700/50 hover:bg-zinc-700/50 transition duration-200">
+                  <td className="px-6 py-4 text-gray-200 text-sm font-medium">{course.courseCode}</td>
+                  <td className="px-6 py-4 text-gray-200 text-sm font-medium">{course.courseName}</td>
+                  <td className="px-6 py-4 text-gray-200 text-sm font-medium">{course.creditHours}</td>
+                  <td className="px-6 py-4 text-gray-200 text-sm font-medium"><span className='bg-green-900 px-2 py-1 rounded text-white'>{course.status}</span></td>
+                  <td className="px-6 py-4 text-gray-200 text-sm font-medium flex gap-2">
                     <button
                       onClick={() => handleEditCourse(course)}
-                      className='bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm font-bold'
+                      className='bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm font-bold text-white'
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteCourse(course.courseCode)}
-                      className='bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-bold'
+                      className='bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-bold text-white'
                     >
                       Delete
                     </button>
@@ -231,22 +227,21 @@ const CourseManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className='p-3 text-center text-gray-400'>No courses found</td>
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-400">No courses found</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {/* ── Add Course Modal ── */}
       {showAddModal && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3'>
           <div className='bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-md'>
-            <h2 className='text-xl md:text-2xl font-bold mb-5'>Add New Course</h2>
+            <h2 className='text-xl md:text-2xl font-bold mb-5 text-white'>Add New Course</h2>
 
             <form onSubmit={handleAddCourse} className='flex flex-col gap-4'>
               <div>
-                <label className='block text-sm font-semibold mb-2'>Course Code</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Course Code</label>
                 <input
                   type='text'
                   required
@@ -258,7 +253,7 @@ const CourseManagement = () => {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2'>Course Name</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Course Name</label>
                 <input
                   type='text'
                   required
@@ -270,7 +265,7 @@ const CourseManagement = () => {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2'>Credit Hours</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Credit Hours</label>
                 <input
                   type='number'
                   required
@@ -284,14 +279,14 @@ const CourseManagement = () => {
               <div className='flex gap-3 mt-5'>
                 <button
                   type='submit'
-                  className='flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold'
+                  className='flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold text-white'
                 >
                   Add Course
                 </button>
                 <button
                   type='button'
                   onClick={() => setShowAddModal(false)}
-                  className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold'
+                  className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white'
                 >
                   Cancel
                 </button>
@@ -301,19 +296,17 @@ const CourseManagement = () => {
         </div>
       )}
 
-      {/* ── Edit Course Modal ── */}
       {showEditModal && editingCourse && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3'>
           <div className='bg-zinc-900 border-2 border-yellow-600 rounded-lg p-5 md:p-8 w-full max-w-md'>
-            <h2 className='text-xl md:text-2xl font-bold mb-1'>Edit Course</h2>
+            <h2 className='text-xl md:text-2xl font-bold mb-1 text-white'>Edit Course</h2>
             <p className='text-gray-400 text-sm mb-5'>
               Editing: <span className='text-yellow-400 font-semibold'>{editingCourse.courseCode}</span> — only fill fields you want to update.
             </p>
 
             <form onSubmit={handleUpdateCourse} className='flex flex-col gap-4'>
-              {/* Course Code — read-only, auto-filled */}
               <div>
-                <label className='block text-sm font-semibold mb-2'>Course Code</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Course Code</label>
                 <input
                   type='text'
                   disabled
@@ -323,7 +316,7 @@ const CourseManagement = () => {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2'>Course Name</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Course Name</label>
                 <input
                   type='text'
                   value={editFormData.courseName}
@@ -334,7 +327,7 @@ const CourseManagement = () => {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2'>Credit Hours</label>
+                <label className='block text-sm font-semibold mb-2 text-gray-200'>Credit Hours</label>
                 <input
                   type='number'
                   value={editFormData.creditHours}
@@ -347,14 +340,14 @@ const CourseManagement = () => {
               <div className='flex gap-3 mt-5'>
                 <button
                   type='submit'
-                  className='flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold'
+                  className='flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold text-white'
                 >
                   Update Course
                 </button>
                 <button
                   type='button'
                   onClick={() => { setShowEditModal(false); setEditingCourse(null) }}
-                  className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold'
+                  className='flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white'
                 >
                   Cancel
                 </button>

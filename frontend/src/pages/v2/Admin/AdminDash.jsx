@@ -5,10 +5,7 @@ import AdUserManagment from "./AdUserManagment";
 import AdCourseManagment from "./AdCourseManagment";
 import AdSectionManagment from "./AdSectionManagment";
 import AdAttendanceQA from "./AdAttendanceQA";
-// import AdSettings from "./AdSettings";
-import AdChangeSection from "./AdChangeSection";
-import AdEnrollStudent from "./AdEnrollStudent";
-import AdRemoveStudent from "./AdremoveStudent";
+
 import { jwtDecode } from "jwt-decode";
 
 const AdminDash = () => {
@@ -114,18 +111,15 @@ const AdminDash = () => {
           btn3={"Course Management"}
           btn4={"Section Management"}
           btn5={"Attendance/QA"}
-          btn6={"Change Section"}
-          btn7={"Enroll Student"}
-          btn8={"Remove Student"}
           onTabChange={(tab) => setActiveTab(tab)}
         />
 
-        <div className="container flex flex-col bg-zinc-800 w-full overflow-hidden">
-          <div className="content-area flex-1 overflow-y-auto p-3 md:p-5">
+        <div className="container flex flex-col bg-gradient-to-br from-zinc-900 via-zinc-800 to-blue-900 w-full overflow-hidden">
+          <div className="content-area flex-1 overflow-y-auto p-3 md:p-6 flex flex-col items-center">
 
             {activeTab === "overview" && (
-              <div className="flex flex-col gap-5">
-                <h1 className="font-bold text-xl md:text-3xl text-white">
+              <div className="flex flex-col gap-5 w-full max-w-7xl">
+                <h1 className="font-bold text-xl md:text-3xl text-white text-center">
                   Dashboard Overview
                 </h1>
                 {loading ? (
@@ -185,14 +179,12 @@ const AdminDash = () => {
               </div>
             )}
 
-            {activeTab === "users"          && <AdUserManagment />}
-            {activeTab === "courses"        && <AdCourseManagment />}
-            {activeTab === "sections"       && <AdSectionManagment />}
-            {activeTab === "attendance"     && <AdAttendanceQA />}
-            {activeTab === "settings"       && <AdSettings />}
-            {activeTab === "changeSection"  && <AdChangeSection />}
-            {activeTab === "enrollStudent"  && <AdEnrollStudent />}
-            {activeTab === "removeStudent"  && <AdRemoveStudent />}
+            <div className="w-full max-w-7xl flex justify-center">
+              {activeTab === "users"          && <AdUserManagment />}
+              {activeTab === "courses"        && <AdCourseManagment />}
+              {activeTab === "sections"       && <AdSectionManagment />}
+              {activeTab === "attendance"     && <AdAttendanceQA />}
+            </div>
           </div>
         </div>
       </div>

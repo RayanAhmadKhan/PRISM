@@ -86,13 +86,13 @@ const LeftNav = (props) => {
     ].filter(Boolean);
 
     return (
-        <div className="left-nav w-[15%] flex items-center justify-between py-6 gap-6 flex-col bg-zinc-900 h-screen border-r-2 border-gray-600 overflow-y-auto">
-            <div className="flex flex-col items-center gap-6 w-full">
+        <div className="w-56 h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-blue-950 border-r-2 border-blue-600/50 flex flex-col items-center justify-between py-6 gap-4 overflow-y-auto shadow-2xl">
+            <div className="flex flex-col items-center gap-3 w-full px-3">
                 {buttons.map((label) => (
                     <button
                         key={label}
                         onClick={() => handleButtonClick(label)}
-                        className='bg-blue-700 flex justify-center p-2 w-40 font-bold rounded-sm cursor-pointer hover:bg-blue-900 text-white transition'
+                        className="w-full px-4 py-2.5 font-medium text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition duration-200 shadow-lg hover:shadow-blue-500/50 text-center"
                     >
                         {label}
                     </button>
@@ -103,7 +103,7 @@ const LeftNav = (props) => {
             {props.onLogout && (
                 <button
                     onClick={props.onLogout}
-                    className='bg-red-700 flex justify-center p-2 w-40 font-bold rounded-sm cursor-pointer hover:bg-red-900 text-white transition mb-2'
+                    className="w-full px-4 py-2.5 font-medium text-sm text-white bg-gradient-to-r from-red-600 to-red-700 rounded-lg hover:from-red-700 hover:to-red-800 transition duration-200 shadow-lg hover:shadow-red-500/50 mb-4 mx-3"
                 >
                     Logout
                 </button>

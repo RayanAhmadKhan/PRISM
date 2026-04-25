@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Table from '../../../components/Table'
 
 const AttendanceQA = () => {
   const [attendance, setAttendance] = useState([])
@@ -33,7 +32,6 @@ const AttendanceQA = () => {
     }
   }
 
-  // ---------------- FETCH ATTENDANCE ----------------
   const fetchAttendance = async () => {
     const res = await fetch('http://localhost:5000/getAttendanceRecord', {
       headers: { Authorization: `Bearer ${token}` }
@@ -62,29 +60,24 @@ const AttendanceQA = () => {
     setAttendance(formatted)
   }
 
-  // ---------------- FETCH SECTIONS ----------------
   const fetchSections = async () => {
     const res = await fetch('http://localhost:5000/getSection', {
       headers: { Authorization: `Bearer ${token}` }
     })
 
     const data = await res.json()
-    console.log("Fetched sections on attendance page:", data.sections)
     setSections(data.sections || [])
   }
 
-  // ---------------- FETCH COURSES ----------------
   const fetchCourses = async () => {
     const res = await fetch('http://localhost:5000/getCourse', {
       headers: { Authorization: `Bearer ${token}` }
     })
 
     const data = await res.json()
-    console.log("Fetched courses on attendance page:", data)
     setCourses(data.courses || [])
   }
 
-  // ---------------- FILTER ----------------
   const filteredAttendance = attendance.filter(record =>
     record.sectionName.toLowerCase().includes(filterSection.toLowerCase()) ||
     record.courseCode.toLowerCase().includes(filterSection.toLowerCase())
@@ -110,7 +103,7 @@ const AttendanceQA = () => {
     <div className="p-3 md:p-5 flex flex-col gap-5">
 
       <div className="header w-full flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
-        <h1 className='font-bold text-lg md:text-xl'>Attendance/QA Records</h1>
+        <h1 className='font-bold text-lg md:text-xl text-white'>Attendance/QA Records</h1>
 
         <div className="side-btns flex flex-col sm:flex-row gap-3">
           <input
@@ -123,19 +116,30 @@ const AttendanceQA = () => {
         </div>
       </div>
 
-      <Table
-        columns={[
-          "Date",
-          "Section",
-          "Course Code",
-          "Total Students",
-          "Present",
-          "Absent",
-          "Status",
-          "Action"
-        ]}
-        rows={filteredAttendance}
-      />
+      <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
+        <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+          <thead>
+            <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+              {["Date", "Section", "Course Code", "Total Students", "Present", "Absent", "Status", "Action"].map((col, index) => (
+                <th key={index} className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredAttendance && filteredAttendance.map((row, i) => (
+              <tr key={i} className="border-b border-gray-700/50 hover:bg-zinc-700/50 transition duration-200">
+                {Object.values(row).map((value, j) => (
+                  <td key={j} className="px-6 py-4 text-gray-200 text-sm font-medium">
+                    {value}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
     </div>
   )

@@ -14,7 +14,6 @@ const AdRemoveStudent = () => {
     sectionName: ""
   });
 
-  // Fetch all courses on mount
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -32,7 +31,6 @@ const AdRemoveStudent = () => {
     fetchCourses();
   }, []);
 
-  // Fetch sections filtered by selected course
   useEffect(() => {
     if (!formData.courseId) {
       setSections([]);
@@ -119,7 +117,6 @@ const AdRemoveStudent = () => {
 
   return (
     <div className="p-3 md:p-5 flex flex-col gap-5">
-      {/* Header */}
       <div className="flex flex-col gap-1">
         <h1 className="font-bold text-lg md:text-xl text-white">
           Remove Student from Section
@@ -129,7 +126,6 @@ const AdRemoveStudent = () => {
         </p>
       </div>
 
-      {/* Alerts */}
       {success && (
         <div className="bg-green-900 border-2 border-green-600 p-3 rounded text-green-200 flex items-start gap-2">
           <span className="mt-0.5">✅</span>
@@ -143,11 +139,8 @@ const AdRemoveStudent = () => {
         </div>
       )}
 
-      {/* Form Card */}
       <div className="bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-xl">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
-          {/* Step 1 — Roll Number */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-200">
               <span className="text-red-400 mr-2">01</span> Student Roll Number
@@ -161,7 +154,6 @@ const AdRemoveStudent = () => {
             />
           </div>
 
-          {/* Step 2 — Course */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-200">
               <span className="text-red-400 mr-2">02</span> Select Course
@@ -180,7 +172,6 @@ const AdRemoveStudent = () => {
             </select>
           </div>
 
-          {/* Step 3 — Section */}
           {formData.courseId && (
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-200">
@@ -211,7 +202,6 @@ const AdRemoveStudent = () => {
             </div>
           )}
 
-          {/* Removal preview */}
           {formData.rollNumber && formData.courseId && formData.sectionName && (
             <div className="bg-zinc-800 border border-red-700 rounded p-3 text-sm text-gray-300">
               <p className="font-semibold text-red-300 mb-1">Removal Summary</p>
@@ -224,7 +214,6 @@ const AdRemoveStudent = () => {
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"

@@ -14,7 +14,6 @@ const AdEnrollStudent = () => {
     sectionName: ""
   });
 
-  // Fetch all courses on mount
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -32,7 +31,6 @@ const AdEnrollStudent = () => {
     fetchCourses();
   }, []);
 
-  // Fetch sections filtered by selected course
   useEffect(() => {
     if (!formData.courseId) {
       setSections([]);
@@ -121,7 +119,6 @@ const AdEnrollStudent = () => {
   const selectedCourse = courses.find((c) => c._id === formData.courseId);
   return (
     <div className="p-3 md:p-5 flex flex-col gap-5">
-      {/* Header */}
       <div className="flex flex-col gap-1">
         <h1 className="font-bold text-lg md:text-xl text-white">
           Enroll Student in Section
@@ -131,7 +128,6 @@ const AdEnrollStudent = () => {
         </p>
       </div>
 
-      {/* Alerts */}
       {success && (
         <div className="bg-green-900 border-2 border-green-600 p-3 rounded text-green-200 flex items-start gap-2">
           <span className="mt-0.5">✅</span>
@@ -145,10 +141,8 @@ const AdEnrollStudent = () => {
         </div>
       )}
 
-      {/* Form Card */}
       <div className="bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-xl">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Step 1 — Roll Number */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-200">
               <span className="text-blue-400 mr-2">01</span> Student Roll Number
@@ -162,7 +156,6 @@ const AdEnrollStudent = () => {
             />
           </div>
 
-          {/* Step 2 — Course */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-200">
               <span className="text-blue-400 mr-2">02</span> Select Course
@@ -181,7 +174,6 @@ const AdEnrollStudent = () => {
             </select>
           </div>
 
-          {/* Step 3 — Section (shown only after course is picked) */}
           {formData.courseId && (
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-200">
@@ -213,7 +205,6 @@ const AdEnrollStudent = () => {
             </div>
           )}
 
-          {/* Enrollment preview */}
           {formData.rollNumber && formData.courseId && formData.sectionName && (
             <div className="bg-zinc-800 border border-blue-700 rounded p-3 text-sm text-gray-300">
               <p className="font-semibold text-blue-300 mb-1">
@@ -240,7 +231,6 @@ const AdEnrollStudent = () => {
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
