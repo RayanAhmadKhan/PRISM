@@ -23,7 +23,8 @@ const LeftNav = (props) => {
             "Section Management": "admin-sections",
             "Attendance/QA":      "admin-attendance",
             "Change Section":     "admin-changeSection",
-            "Enroll Student":     "admin-enrollStudent"
+            "Enroll Student":     "admin-enrollStudent",
+            "Remove Student":     "admin-removeStudent" 
         };
 
         return paths[btnLabel] || "/";
@@ -48,7 +49,8 @@ const LeftNav = (props) => {
                 'admin-sections':       'sections',
                 'admin-attendance':     'attendance',
                 'admin-changeSection':  'changeSection',
-                'admin-enrollStudent':  'enrollStudent'
+                'admin-enrollStudent':  'enrollStudent',
+                'admin-removeStudent':  'removeStudent' 
             };
             props.onTabChange(tabMap[path]);
         } else if (btnLabel === "Admin Dashboard" && props.onTabChange) {

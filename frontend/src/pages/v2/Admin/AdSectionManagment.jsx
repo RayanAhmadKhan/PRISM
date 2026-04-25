@@ -8,9 +8,18 @@ const SectionManagement = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingSection, setEditingSection] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
   const [formData, setFormData] = useState({
+    sectionName: "",
+    semester: "",
+    year: "",
+    courseCode: "",
+    instructor: ""
+  });
+  const [editFormData, setEditFormData] = useState({
     sectionName: "",
     semester: "",
     year: "",
@@ -42,10 +51,12 @@ const SectionManagement = () => {
         id: section._id,
         sectionName: section.sectionName,
         courseCode: section.courseCode?.courseCode || "N/A",
+        courseObjectId: section.courseCode?._id || "",
         courseName: section.courseCode?.courseName || "N/A",
         semester: section.semester || "N/A",
         year: section.year || "N/A",
         instructor: section.instructor?.name || "Unassigned",
+        instructorObjectId: section.instructor?._id || "",
         instructorID: section.instructor?.instructorID || "N/A",
         students: (section.students || []).map((s) => ({
           name: s.name || "Unknown",
@@ -108,12 +119,63 @@ const SectionManagement = () => {
       }
 
       setSuccess("Section added successfully!");
-      setShowModal(false);
+      setShowAddModal(false);
       setFormData({ sectionName: "", semester: "", year: "", courseCode: "", instructor: "" });
       fetchSections();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message || "Failed to add section");
+    }
+  };
+
+  // Pre-fill edit form with the section's current ObjectIds so dropdowns show the right selection
+  const handleEditOpen = (section) => {
+    setEditingSection(section);
+    setEditFormData({
+      sectionName: section.sectionName === "N/A" ? "" : section.sectionName,
+      semester:    section.semester    === "N/A" ? "" : section.semester,
+      year:        section.year        === "N/A" ? "" : String(section.year),
+      courseCode:  section.courseObjectId  || "",
+      instructor:  section.instructorObjectId || ""
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateSection = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+
+      // Only include fields that were actually filled / changed
+      const body = { sectionId: editingSection.id };
+      if (editFormData.sectionName.trim()) body.sectionName = editFormData.sectionName.trim();
+      if (editFormData.semester.trim())    body.semester    = editFormData.semester.trim();
+      if (editFormData.year)               body.year        = editFormData.year;
+      if (editFormData.courseCode)         body.courseCode  = editFormData.courseCode;
+      if (editFormData.instructor)         body.instructor  = editFormData.instructor;
+
+      const response = await fetch("http://localhost:5000/updateSection", {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Failed to update section");
+      }
+
+      setSuccess("Section updated successfully!");
+      setShowEditModal(false);
+      setEditingSection(null);
+      if (selectedSection?.id === editingSection.id) setSelectedSection(null);
+      fetchSections();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.message || "Failed to update section");
     }
   };
 
@@ -180,7 +242,7 @@ const SectionManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => setShowAddModal(true)}
             className="bg-blue-700 w-full sm:w-35 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900"
           >
             + Add Section
@@ -188,7 +250,7 @@ const SectionManagement = () => {
         </div>
       </div>
 
-      {/* Main layout — table + detail panel side by side when a section is selected */}
+      {/* Main layout — table + detail panel */}
       <div className={`flex gap-4 ${selectedSection ? "flex-col lg:flex-row" : ""}`}>
 
         {/* Sections Table */}
@@ -225,20 +287,23 @@ const SectionManagement = () => {
                     <td className="p-3">{section.year}</td>
                     <td className="p-3">{section.instructor}</td>
                     <td className="p-3">
-                      <span className="bg-green-900 px-2 py-1 rounded">
-                        {section.status}
-                      </span>
+                      <span className="bg-green-900 px-2 py-1 rounded">{section.status}</span>
                     </td>
                     <td className="p-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // prevent row click from firing
-                          handleDeleteSection(section.id);
-                        }}
-                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-bold"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleEditOpen(section); }}
+                          className="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm font-bold"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteSection(section.id); }}
+                          className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm font-bold"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -256,7 +321,6 @@ const SectionManagement = () => {
         {/* Section Detail Panel */}
         {selectedSection && (
           <div className="lg:w-1/2 bg-zinc-900 border-2 border-blue-600 rounded-lg p-5 flex flex-col gap-4">
-            {/* Panel Header */}
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-lg font-bold text-white">{selectedSection.sectionName}</h2>
@@ -272,7 +336,6 @@ const SectionManagement = () => {
 
             <hr className="border-gray-600" />
 
-            {/* Section Info Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-zinc-800 rounded p-3">
                 <p className="text-gray-400 text-xs mb-1">Course</p>
@@ -281,9 +344,7 @@ const SectionManagement = () => {
               </div>
               <div className="bg-zinc-800 rounded p-3">
                 <p className="text-gray-400 text-xs mb-1">Semester / Year</p>
-                <p className="text-white text-sm font-semibold">
-                  Semester {selectedSection.semester}
-                </p>
+                <p className="text-white text-sm font-semibold">Semester {selectedSection.semester}</p>
                 <p className="text-gray-400 text-xs">{selectedSection.year}</p>
               </div>
               <div className="bg-zinc-800 rounded p-3">
@@ -297,7 +358,6 @@ const SectionManagement = () => {
               </div>
             </div>
 
-            {/* Student List */}
             <div>
               <h3 className="text-sm font-bold text-gray-300 mb-2">
                 Enrolled Students
@@ -331,8 +391,8 @@ const SectionManagement = () => {
         )}
       </div>
 
-      {/* Add Section Modal */}
-      {showModal && (
+      {/* ── Add Section Modal ── */}
+      {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
           <div className="bg-zinc-900 border-2 border-gray-600 rounded-lg p-5 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl md:text-2xl font-bold mb-5">Add New Section</h2>
@@ -409,15 +469,104 @@ const SectionManagement = () => {
               </div>
 
               <div className="flex gap-3 mt-5">
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold"
-                >
+                <button type="submit" className="flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold">
                   Add Section
+                </button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Section Modal ── */}
+      {showEditModal && editingSection && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
+          <div className="bg-zinc-900 border-2 border-yellow-600 rounded-lg p-5 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl md:text-2xl font-bold mb-1">Edit Section</h2>
+            <p className="text-gray-400 text-sm mb-5">
+              Editing:{" "}
+              <span className="text-yellow-400 font-semibold">{editingSection.sectionName}</span>
+              {" · "}
+              <span className="text-gray-300">{editingSection.courseCode}</span>
+              {" — only fill the fields you want to update."}
+            </p>
+
+            <form onSubmit={handleUpdateSection} className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2">Section Name</label>
+                <input
+                  type="text"
+                  value={editFormData.sectionName}
+                  onChange={(e) => setEditFormData({ ...editFormData, sectionName: e.target.value })}
+                  className="w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none"
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Course</label>
+                <select
+                  value={editFormData.courseCode}
+                  onChange={(e) => setEditFormData({ ...editFormData, courseCode: e.target.value })}
+                  className="w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none"
+                >
+                  <option value="">— Keep current course —</option>
+                  {courses.map((course) => (
+                    <option key={course._id} value={course._id}>
+                      {course.courseCode} - {course.courseName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Semester</label>
+                <input
+                  type="text"
+                  value={editFormData.semester}
+                  onChange={(e) => setEditFormData({ ...editFormData, semester: e.target.value })}
+                  className="w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none"
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Year</label>
+                <input
+                  type="text"
+                  value={editFormData.year}
+                  onChange={(e) => setEditFormData({ ...editFormData, year: e.target.value })}
+                  className="w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none"
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Instructor</label>
+                <select
+                  value={editFormData.instructor}
+                  onChange={(e) => setEditFormData({ ...editFormData, instructor: e.target.value })}
+                  className="w-full bg-zinc-800 p-2 border-2 border-gray-600 rounded text-white focus:border-yellow-500 outline-none"
+                >
+                  <option value="">— Keep current instructor —</option>
+                  {instructors.map((inst) => (
+                    <option key={inst._id} value={inst._id}>
+                      {inst.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-3 mt-5">
+                <button type="submit" className="flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold">
+                  Update Section
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => { setShowEditModal(false); setEditingSection(null); }}
                   className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold"
                 >
                   Cancel

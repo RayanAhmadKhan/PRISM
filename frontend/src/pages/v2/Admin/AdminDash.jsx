@@ -5,11 +5,10 @@ import AdUserManagment from "./AdUserManagment";
 import AdCourseManagment from "./AdCourseManagment";
 import AdSectionManagment from "./AdSectionManagment";
 import AdAttendanceQA from "./AdAttendanceQA";
-import AdFlaggedCases from "./AdFlaggedCases";
-import AdAudit from "./AdAudit";
-import AdSettings from "./AdSettings";
+// import AdSettings from "./AdSettings";
 import AdChangeSection from "./AdChangeSection";
 import AdEnrollStudent from "./AdEnrollStudent";
+import AdRemoveStudent from "./AdremoveStudent";
 import { jwtDecode } from "jwt-decode";
 
 const AdminDash = () => {
@@ -117,6 +116,7 @@ const AdminDash = () => {
           btn5={"Attendance/QA"}
           btn6={"Change Section"}
           btn7={"Enroll Student"}
+          btn8={"Remove Student"}
           onTabChange={(tab) => setActiveTab(tab)}
         />
 
@@ -192,6 +192,7 @@ const AdminDash = () => {
             {activeTab === "settings"       && <AdSettings />}
             {activeTab === "changeSection"  && <AdChangeSection />}
             {activeTab === "enrollStudent"  && <AdEnrollStudent />}
+            {activeTab === "removeStudent"  && <AdRemoveStudent />}
           </div>
         </div>
       </div>

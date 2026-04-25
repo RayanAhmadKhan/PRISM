@@ -25,7 +25,8 @@ import markAttendanceRoute from "./routes/MarkAttendanceRoute.js";
 import changeSectionRoute from "./routes/changeSectionRoute.js";
 import changeCourseInfoRoute from "./routes/changeCourseInfoRoute.js";
 import updateUserInfoRoute from "./routes/updateUserInfoRoute.js";
-
+import removeStudentFromSection from "./routes/Removestuedentfromsection.js";
+import updateSectionRoute from "./routes/updateSectionRoute.js";
 env.config();
 
 const port = process.env.PORT || 3000;
@@ -56,7 +57,9 @@ app.use("/flagApproval", flagApprovalRoute);
 app.use("/markAttendance", markAttendanceRoute);
 app.use("/changeSection", changeSectionRoute);
 app.use("/changeCourseInfo", changeCourseInfoRoute);
+app.use("/updateSection", updateSectionRoute);
 app.use("/updateUserInfo", updateUserInfoRoute);
+app.use("/removeStudentFromSection", removeStudentFromSection);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World from Backend!" });
