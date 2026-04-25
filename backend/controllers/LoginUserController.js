@@ -9,8 +9,7 @@ const identifyUserTypeByID = (id) => {
   const adminIDPattern = /^a\d+$|^admin/i;
   
   // Student roll number pattern (typically alphanumeric, e.g., "CS-2021-001" or "21-0001")
-  const studentIDPattern = /^\d{4}-\d{4}$|^[A-Z] {2,}-\d{4}-\d{3,4}$/i;
-  
+  const studentIDPattern = /^\d{2}[A-Z]-\d{4}$/;  
   // Instructor ID pattern (typically starts with 'I' or 'INSTR')
   const instructorIDPattern = /^i\d+$|^instr/i;
 

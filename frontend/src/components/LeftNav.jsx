@@ -4,14 +4,14 @@ const LeftNav = (props) => {
 
     const getNavPath = (btnLabel) => {
         const paths = {
-            "Student Dashboard":  "/pages/v2/StudentDash",
+            "Student Dashboard":  "/pages/v2/Student/StudentDash",
             "Teacher Dashboard":  "/pages/v2/Instructor/TeacherDash",
             "Admin Dashboard":    "/pages/v2/Admin/AdminDash",
 
             // student dash buttons
-            "Courses":            "/pages/v2/Course",
-            "Attendance History": "/pages/v2/StAttendance",
-            "Profile":            "/pages/v2/StProfile",
+            "Courses":            "/pages/v2/Student/StCourses",
+            "Attendance History": "/pages/v2/Student/StAttendance",
+            "Profile":            "/pages/v2/Student/StProfile",
 
             // teacher dash buttons (page-level nav — no onTabChange needed)
             "Attendance Record":  "/pages/v2/Instructor/TchAttendance",

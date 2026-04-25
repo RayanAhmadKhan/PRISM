@@ -2,11 +2,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import Login from "./pages/v2/Login.jsx";
-import Signup from "./pages/v2/Signup.jsx";
 
 import AdminDash from "./pages/v2/Admin/AdminDash.jsx";
 import TeacherDash from "./pages/v2/Instructor/TeacherDash.jsx";
-import StudentDash from "./pages/v2/StudentDash.jsx";
+import StudentDash from "./pages/v2/Student/StudentDash.jsx";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, role }) => {
@@ -37,7 +36,6 @@ function App() {
 
       {/* Login */}
       <Route path="/" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
 
       {/* Admin */}
       <Route
