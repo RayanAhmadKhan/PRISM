@@ -32,39 +32,43 @@ const LeftNav = (props) => {
     }
 
     const handleButtonClick = (btnLabel) => {
-        // Flagged Cases: admin uses tab, teacher uses page nav
-        if (btnLabel === "Flagged Cases") {
-            if (props.onTabChange) {
-                props.onTabChange('flagged');
-            } else {
-                window.location.href = "/pages/v2/Instructor/TchCase";
-            }
-            return;
-        }
-
-        // Admin internal tabs
-        const path = getNavPath(btnLabel);
-        if (path.startsWith('admin-') && props.onTabChange) {
-            const adminTabMap = {
-                'admin-users':          'users',
-                'admin-courses':        'courses',
-                'admin-sections':       'sections',
-                'admin-attendance':     'attendance',
-                'admin-changeSection':  'changeSection',
-                'admin-enrollStudent':  'enrollStudent',
-                'admin-removeStudent':  'removeStudent',
+        // ── Teacher tabs (only when onTabChange is provided — i.e. inside TeacherDashboard) ──
+        if (props.onTabChange) {
+            const teacherTabMap = {
+                "Teacher Dashboard":  "dashboard",
+                "Attendance Record":  "attendance",
+                "Flagged Cases":      "flagged",
+                "Profile Settings":   "profile",
             };
-            props.onTabChange(adminTabMap[path]);
-            return;
+            if (teacherTabMap[btnLabel] !== undefined) {
+                props.onTabChange(teacherTabMap[btnLabel]);
+                return;
+            }
+
+            // Admin internal tabs
+            const path = getNavPath(btnLabel);
+            if (path.startsWith('admin-')) {
+                const adminTabMap = {
+                    'admin-users':          'users',
+                    'admin-courses':        'courses',
+                    'admin-sections':       'sections',
+                    'admin-attendance':     'attendance',
+                    'admin-changeSection':  'changeSection',
+                    'admin-enrollStudent':  'enrollStudent',
+                    'admin-removeStudent':  'removeStudent',
+                };
+                props.onTabChange(adminTabMap[path]);
+                return;
+            }
+
+            if (btnLabel === "Admin Dashboard") {
+                props.onTabChange('overview');
+                return;
+            }
         }
 
-        // Admin Dashboard overview
-        if (btnLabel === "Admin Dashboard" && props.onTabChange) {
-            props.onTabChange('overview');
-            return;
-        }
-
-        // Default: navigate to page
+        // ── Default: navigate to page ──
+        const path = getNavPath(btnLabel);
         if (!path.startsWith('admin-')) {
             window.location.href = path;
         }
