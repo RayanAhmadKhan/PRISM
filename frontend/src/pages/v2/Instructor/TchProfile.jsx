@@ -6,13 +6,13 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
   const [profile,      setProfile]      = useState(null);
   const [loading,      setLoading]      = useState(true);
 
+  const [showModal,    setShowModal]    = useState(false);
   const [currentPass,  setCurrentPass]  = useState("");
   const [newPass,      setNewPass]      = useState("");
   const [confirmPass,  setConfirmPass]  = useState("");
   const [saving,       setSaving]       = useState(false);
   const [statusMsg,    setStatusMsg]    = useState("");
 
-  // Decode once and log so you can see every field in the token payload
   const decoded = jwtDecode(token);
   console.log("Token payload:", decoded);
 
@@ -36,6 +36,12 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
       .finally(() => setLoading(false));
   }, [instructorId]);
 
+  const closeModal = () => {
+    setShowModal(false);
+    setCurrentPass(""); setNewPass(""); setConfirmPass("");
+    setStatusMsg("");
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setStatusMsg("");
@@ -45,13 +51,12 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
     if (newPass.length < 6)   return setStatusMsg("✗ New password must be at least 6 characters.");
     if (newPass !== confirmPass) return setStatusMsg("✗ New passwords do not match.");
 
-    // Try every common token field name for the user ID
     const userID =
-      decoded._id      ||
-      decoded.id       ||
-      decoded.userId   ||
-      decoded.userID   ||
-      decoded.sub      ||
+      decoded._id    ||
+      decoded.id     ||
+      decoded.userId ||
+      decoded.userID ||
+      decoded.sub    ||
       instructorId;
 
     const body = {
@@ -79,10 +84,8 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
 
       if (res.ok) {
         setStatusMsg("✓ Password changed successfully!");
-        setCurrentPass("");
-        setNewPass("");
-        setConfirmPass("");
-        setTimeout(() => setStatusMsg(""), 3000);
+        setCurrentPass(""); setNewPass(""); setConfirmPass("");
+        setTimeout(() => { closeModal(); }, 2000);
       } else {
         setStatusMsg(`✗ ${data.message || "Failed to change password"}`);
       }
@@ -94,108 +97,170 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
     }
   };
 
-  if (loading) return <p className="m-5 text-gray-400 italic text-sm">Loading profile…</p>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <p className="text-gray-400 italic text-sm">Loading profile…</p>
+    </div>
+  );
 
   return (
-    <div className="flex flex-col gap-5 m-3 w-full max-w-2xl">
+    /* Full-page centered wrapper */
+    <div className="min-h-screen flex justify-center px-4 py-10">
+      <div className="flex flex-col gap-5 w-full max-w-2xl">
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3">
-        <h1 className="font-bold text-lg md:text-2xl">Profile</h1>
-        {statusMsg && (
-          <p className={`px-4 py-2 rounded-md font-bold text-sm ${
-            statusMsg.startsWith("✓")
-              ? "bg-green-900 border border-green-600 text-green-200"
-              : "bg-red-900 border border-red-600 text-red-200"
-          }`}>
-            {statusMsg}
-          </p>
-        )}
-      </div>
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="font-bold text-2xl md:text-3xl">My Profile</h1>
+          <p className="text-gray-400 text-sm mt-1">Your personal information and account settings</p>
+        </div>
 
-      {/* Profile Info Cards — read only */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {[
-          { label: "Full Name",         value: profile?.name         || "—", icon: "👤" },
-          { label: "Instructor ID",     value: profile?.instructorID || "—", icon: "🪪" },
-          { label: "Email",             value: profile?.email        || "—", icon: "✉️" },
-          { label: "Sections Assigned", value: sectionCount,                 icon: "📋", accent: true }
-        ].map(({ label, value, icon, accent }) => (
-          <div
-            key={label}
-            className={`bg-zinc-900 rounded-md border-2 p-4 flex items-center gap-4 ${
-              accent ? "border-blue-600" : "border-gray-600"
-            }`}
-          >
-            <span className="text-2xl">{icon}</span>
-            <div className="flex flex-col gap-0.5">
-              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">{label}</p>
-              <p className={`font-bold text-base ${accent ? "text-blue-400" : "text-white"}`}>{value}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Change Password Form */}
-      <div className="bg-zinc-900 rounded-md border-2 border-gray-600 p-5">
-        <h2 className="font-bold text-base mb-1 text-gray-200">Change Password</h2>
-        <p className="text-gray-400 text-sm mb-5">Enter your current password and choose a new one.</p>
-
-        <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-300">Current Password</label>
-            <input
-              type="password"
-              value={currentPass}
-              onChange={(e) => setCurrentPass(e.target.value)}
-              placeholder="Enter current password"
-              className="w-full bg-zinc-800 rounded-md border-2 border-gray-600 p-2.5 text-white focus:border-blue-500 outline-none transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-300">New Password</label>
-            <input
-              type="password"
-              value={newPass}
-              onChange={(e) => setNewPass(e.target.value)}
-              placeholder="Enter new password"
-              className="w-full bg-zinc-800 rounded-md border-2 border-gray-600 p-2.5 text-white focus:border-blue-500 outline-none transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-300">Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPass}
-              onChange={(e) => setConfirmPass(e.target.value)}
-              placeholder="Re-enter new password"
-              className={`w-full bg-zinc-800 rounded-md border-2 p-2.5 text-white outline-none transition ${
-                confirmPass && confirmPass !== newPass
-                  ? "border-red-500"
-                  : confirmPass && confirmPass === newPass
-                  ? "border-green-500"
-                  : "border-gray-600 focus:border-blue-500"
+        {/* Profile Info Cards — read only */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { label: "Full Name",         value: profile?.name         || "—", icon: "👤" },
+            { label: "Instructor ID",     value: profile?.instructorID || "—", icon: "🪪" },
+            { label: "Email",             value: profile?.email        || "—", icon: "✉️" },
+            { label: "Sections Assigned", value: sectionCount,                 icon: "📋", accent: true }
+          ].map(({ label, value, icon, accent }) => (
+            <div
+              key={label}
+              className={`bg-zinc-900 rounded-xl border-2 p-4 flex items-center gap-4 ${
+                accent ? "border-blue-600" : "border-gray-600"
               }`}
-            />
-            {confirmPass && confirmPass !== newPass && (
-              <p className="text-red-400 text-xs mt-1">Passwords do not match.</p>
-            )}
-          </div>
-
-          <div className="flex justify-end pt-1">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-900 disabled:cursor-not-allowed px-6 py-2 rounded-md font-bold text-white transition"
             >
-              {saving ? "Saving…" : "Change Password"}
-            </button>
-          </div>
-        </form>
+              <span className="text-2xl">{icon}</span>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">{label}</p>
+                <p className={`font-bold text-base break-all ${accent ? "text-blue-400" : "text-white"}`}>{value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Change Password trigger button — centered */}
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 active:scale-95
+                       px-6 py-2.5 rounded-md font-bold text-white transition-all duration-150"
+          >
+            🔑 Change Password
+          </button>
+        </div>
       </div>
+
+      {/* ── Modal Overlay ── */}
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
+        >
+          <div className="bg-zinc-900 border-2 border-gray-600 rounded-2xl w-full max-w-md shadow-2xl
+                          animate-[fadeSlideIn_0.2s_ease-out]">
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-700">
+              <div>
+                <h3 className="font-bold text-lg text-gray-100">Change Password</h3>
+                <p className="text-gray-400 text-xs mt-0.5">Enter your current password and choose a new one.</p>
+              </div>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-white text-xl leading-none transition"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Status message inside modal */}
+            {statusMsg && (
+              <div className={`mx-6 mt-4 px-4 py-2 rounded-md font-bold text-sm ${
+                statusMsg.startsWith("✓")
+                  ? "bg-green-900 border border-green-600 text-green-200"
+                  : "bg-red-900 border border-red-600 text-red-200"
+              }`}>
+                {statusMsg}
+              </div>
+            )}
+
+            {/* Modal Form */}
+            <form onSubmit={handleChangePassword} className="flex flex-col gap-4 px-6 py-5">
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-300">Current Password</label>
+                <input
+                  type="password"
+                  value={currentPass}
+                  onChange={(e) => setCurrentPass(e.target.value)}
+                  placeholder="Enter current password"
+                  className="w-full bg-zinc-800 rounded-md border-2 border-gray-600 p-2.5 text-white
+                             focus:border-blue-500 outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-300">New Password</label>
+                <input
+                  type="password"
+                  value={newPass}
+                  onChange={(e) => setNewPass(e.target.value)}
+                  placeholder="Enter new password"
+                  className="w-full bg-zinc-800 rounded-md border-2 border-gray-600 p-2.5 text-white
+                             focus:border-blue-500 outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-300">Confirm New Password</label>
+                <input
+                  type="password"
+                  value={confirmPass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  placeholder="Re-enter new password"
+                  className={`w-full bg-zinc-800 rounded-md border-2 p-2.5 text-white outline-none transition ${
+                    confirmPass && confirmPass !== newPass
+                      ? "border-red-500"
+                      : confirmPass && confirmPass === newPass
+                      ? "border-green-500"
+                      : "border-gray-600 focus:border-blue-500"
+                  }`}
+                />
+                {confirmPass && confirmPass !== newPass && (
+                  <p className="text-red-400 text-xs mt-1">Passwords do not match.</p>
+                )}
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex justify-end gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-5 py-2 rounded-md font-bold text-gray-300 border-2 border-gray-600
+                             hover:border-gray-400 hover:text-white transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-900 disabled:cursor-not-allowed
+                             px-6 py-2 rounded-md font-bold text-white transition"
+                >
+                  {saving ? "Saving…" : "Change Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Keyframe for modal entrance */}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0)     scale(1);    }
+        }
+      `}</style>
     </div>
   );
 };
