@@ -1,5 +1,5 @@
-import Sections from "../models/Sections.js";
-import Students from "../models/Students.js";
+import Sections from "../models/sections.js";
+import Students from "../models/students.js";
 
 export const addStudentInSection = async (req, res) => {
   try {

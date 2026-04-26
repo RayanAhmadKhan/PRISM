@@ -1,4 +1,4 @@
-import Attendance from "../models/Attendance.js";
+import Attendance from "../models/attendance.js";
 
 export const getFlaggedCases = async (req, res) => {
   try {

@@ -1,4 +1,4 @@
-import Attendance from "../models/Attendance.js";
+import Attendance from "../models/attendance.js";
 import Students from "../models/students.js";
 import axios from "axios";
 import FormData from "form-data";

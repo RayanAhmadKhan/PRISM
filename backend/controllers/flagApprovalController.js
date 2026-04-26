@@ -1,4 +1,4 @@
-import Attendance from "../models/Attendance.js";
+import Attendance from "../models/attendance.js";
 export const flagApproval = async (req, res) => {
   try {
     const { attendanceId, studentId, action } = req.body;

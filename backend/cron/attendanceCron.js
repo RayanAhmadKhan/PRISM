@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import Attendance from "../models/Attendance.js";
+import Attendance from "../models/attendance.js";
 
 export const startAttendanceCron = () => {
 
