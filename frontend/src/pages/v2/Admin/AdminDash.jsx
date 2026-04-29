@@ -13,8 +13,7 @@ const AdminDash = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCourses: 0,
-    totalSections: 0,
-    attendanceRate: 0
+    totalSections: 0
   });
   const [topUsers, setTopUsers] = useState([]);
   const [topCourses, setTopCourses] = useState([]);
@@ -58,26 +57,10 @@ const AdminDash = () => {
       const allSections = sectionsData.sections || [];
       setTopSections(allSections.slice(0, 5));
 
-      const attendanceRes = await fetch("http://localhost:5000/getAttendanceRecord", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const attendanceData = await attendanceRes.json();
-      const records = attendanceData.attendance || [];
-      let totalPresent = 0;
-      let totalStudents = 0;
-      records.forEach((record) => {
-        totalStudents += record.students?.length || 0;
-        totalPresent +=
-          record.students?.filter((s) => s.status === "Present").length || 0;
-      });
-      const attendanceRate =
-        totalStudents > 0 ? Math.round((totalPresent / totalStudents) * 100) : 0;
-
       setStats({
         totalUsers,
         totalCourses: allCourses.length,
-        totalSections: allSections.length,
-        attendanceRate
+        totalSections: allSections.length
       });
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
@@ -86,17 +69,26 @@ const AdminDash = () => {
     }
   };
 
-  const StatCard = ({ title, value, icon, color }) => (
-    <div
-      className={`flex flex-col gap-3 p-4 md:p-6 bg-${color}-900 border-2 border-${color}-600 rounded-lg flex-1 min-w-50`}
-    >
-      <div className="flex justify-between items-center">
-        <h3 className="text-sm md:text-base font-semibold text-gray-300">{title}</h3>
-        <span className="text-2xl md:text-3xl">{icon}</span>
+  const colorClasses = {
+    blue: { bg: "bg-blue-900", border: "border-blue-600", text: "text-blue-400" },
+    green: { bg: "bg-green-900", border: "border-green-600", text: "text-green-400" },
+    purple: { bg: "bg-purple-900", border: "border-purple-600", text: "text-purple-400" }
+  };
+
+  const StatCard = ({ title, value, icon, color }) => {
+    const colors = colorClasses[color] || colorClasses.blue;
+    return (
+      <div
+        className={`flex flex-col gap-3 p-4 md:p-6 ${colors.bg} border-2 ${colors.border} rounded-lg flex-1 min-w-50`}
+      >
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm md:text-base font-semibold text-gray-300">{title}</h3>
+          <span className="text-2xl md:text-3xl">{icon}</span>
+        </div>
+        <p className={`text-2xl md:text-4xl font-bold ${colors.text}`}>{value}</p>
       </div>
-      <p className={`text-2xl md:text-4xl font-bold text-${color}-400`}>{value}</p>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-dvh w-full">
@@ -114,7 +106,7 @@ const AdminDash = () => {
           onTabChange={(tab) => setActiveTab(tab)}
         />
 
-        <div className="container flex flex-col bg-gradient-to-br from-zinc-900 via-zinc-800 to-blue-900 w-full overflow-hidden">
+        <div className="container flex flex-col bg-linear-to-br from-zinc-900 via-zinc-800 to-blue-900 w-full overflow-hidden">
           <div className="content-area flex-1 overflow-y-auto p-3 md:p-6 flex flex-col items-center">
 
             {activeTab === "overview" && (
@@ -125,11 +117,10 @@ const AdminDash = () => {
                 {loading ? (
                   <div className="text-center text-gray-400">Loading statistics...</div>
                 ) : (
-                  <div className="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <StatCard title="Total Users"     value={stats.totalUsers}           icon="👥" color="blue"   />
                     <StatCard title="Total Courses"   value={stats.totalCourses}         icon="📚" color="green"  />
                     <StatCard title="Total Sections"  value={stats.totalSections}        icon="📋" color="purple" />
-                    <StatCard title="Attendance Rate" value={`${stats.attendanceRate}%`} icon="✅" color="yellow" />
                   </div>
                 )}
 

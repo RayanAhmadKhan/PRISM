@@ -28,8 +28,7 @@ const MarkModal = ({ session, markRoll, setMarkRoll, markMethod, setMarkMethod, 
           <select value={markMethod} onChange={e => setMarkMethod(e.target.value)}
             className="bg-zinc-800 border-2 border-gray-600 p-2 rounded-sm text-white">
             <option value="face">Face Recognition</option>
-            <option value="manual">Manual</option>
-            <option value="qr">QR Code</option>
+            <option value="fingerprint">Fingerprint</option>
           </select>
         </div>
         {markMsg && (
@@ -362,7 +361,7 @@ const TchAttendance = ({ instructorId, token }) => {
           <select
             value={selectedSection}
             onChange={e => setSelectedSection(e.target.value)}
-            className="bg-zinc-900 border-2 border-gray-600 text-white p-2 rounded-sm text-sm min-w-[240px]"
+            className="bg-zinc-900 border-2 border-gray-600 text-white p-2 rounded-sm text-sm min-w-60"
           >
             {sections.map(s => (
               <option key={s._id} value={s._id}>{sectionLabel(s)}</option>
