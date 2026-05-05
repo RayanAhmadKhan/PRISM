@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
@@ -108,12 +109,13 @@ async def verify_user(
     modality: str = Form("face"),
     file: UploadFile = File(...),
 ):
+    modality_name = (modality or "face").strip().lower()
     if not _is_allowed_image(file):
         raise HTTPException(status_code=400, detail="Only .jpg/.jpeg/.png images are supported.")
 
     path = save_temp_file(file)
     try:
-        if modality.lower() == "fingerprint":
+        if modality_name == "fingerprint":
             result = recognition_sys.verify_fingerprint(user_id, path)
         else:
             result = recognition_sys.verify_identity(user_id, path)
@@ -122,6 +124,15 @@ async def verify_user(
 
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))
+    if not result.get("is_match"):
+        biometric_label = "Fingerprint" if modality_name == "fingerprint" else "Face"
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "message": f"{biometric_label} does not match the enrolled identity.",
+                "result": result,
+            },
+        )
     return result
 
 

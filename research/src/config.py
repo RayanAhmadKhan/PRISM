@@ -14,9 +14,9 @@ if os.path.exists(RAW_IMAGES_PATH) and not os.path.isdir(RAW_IMAGES_PATH):
 
 # Biometric configurations
 # Switched to offline OpenCV-based embedding (ORB+SIFT features)
-# Higher threshold for feature-based matching (vs deep learning embeddings)
+# Lower threshold to reduce false positives from the lightweight OpenCV feature vector.
 DISTANCE_METRIC = "cosine"
-SIMILARITY_THRESHOLD = 0.60
+SIMILARITY_THRESHOLD = 0.20
 
 os.makedirs(ENROLLMENT_DB_PATH, exist_ok=True)
 os.makedirs(RAW_IMAGES_PATH, exist_ok=True)
