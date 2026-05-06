@@ -5,6 +5,7 @@ import time
 import os
 from src.utils import logger, load_template
 from src.config import ENROLLMENT_DB_PATH, SIMILARITY_THRESHOLD
+from src.enrollment import extract_face_embedding, _hog_embedding  # shared HOG pipeline
 
 class FaceRecognitionSystem:
     def __init__(self, db_path=ENROLLMENT_DB_PATH):
@@ -55,13 +56,73 @@ class FaceRecognitionSystem:
         source_rep = np.asarray(source_rep, dtype=np.float32).flatten()
         test_rep = np.asarray(test_rep, dtype=np.float32).flatten()
         
+        logger.info(f"Source embedding shape: {source_rep.shape}, norm: {np.linalg.norm(source_rep):.4f}")
+        logger.info(f"Test embedding shape: {test_rep.shape}, norm: {np.linalg.norm(test_rep):.4f}")
+        
         a = np.dot(source_rep, test_rep)
         b = np.sum(source_rep * source_rep)
         c = np.sum(test_rep * test_rep)
         
         if b == 0 or c == 0:
+            logger.warning("Zero norm detected in embeddings")
             return 1.0  # Max distance if either embedding is zero
-        return 1.0 - (a / (np.sqrt(b) * np.sqrt(c)))
+        
+        distance = 1.0 - (a / (np.sqrt(b) * np.sqrt(c)))
+        logger.info(f"Cosine distance calculated: {distance:.6f}")
+        return distance
+
+    def _match_face_descriptors(self, enrolled_embedding, live_embedding) -> float:
+        """Match face descriptors using BFMatcher (similar to fingerprint matching).
+        Returns a score from 0-1 indicating match confidence."""
+        if enrolled_embedding is None or live_embedding is None:
+            logger.warning("None descriptors in face matching")
+            return 0.0
+        
+        enrolled = np.asarray(enrolled_embedding, dtype=np.float32)
+        live = np.asarray(live_embedding, dtype=np.float32)
+        
+        if enrolled.size == 0 or live.size == 0:
+            logger.warning(f"Empty embeddings in descriptor matching: enrolled={enrolled.shape}, live={live.shape}")
+            return 0.0
+        
+        try:
+            # Use BFMatcher for L2 distance (SIFT uses L2)
+            matcher = cv2.BFMatcher(cv2.NORM_L2, crossCheck=False)
+            
+            # KNN match with k=2 for Lowe's ratio test
+            matches = matcher.knnMatch(enrolled, live, k=2)
+            
+            if not matches:
+                logger.warning("No descriptor matches found")
+                return 0.0
+            
+            # Apply Lowe's ratio test to filter good matches
+            good_matches = []
+            for match_pair in matches:
+                if len(match_pair) == 2:
+                    m, n = match_pair
+                    # Lowe's ratio test: if first match is significantly better than second
+                    if m.distance < 0.75 * n.distance:
+                        good_matches.append(m)
+                elif len(match_pair) == 1:
+                    good_matches.append(match_pair[0])
+            
+            match_count = len(good_matches)
+            logger.info(f"Good matches found: {match_count} out of {len(matches)} total matches")
+            logger.info(f"Enrolled descriptors: {len(enrolled)}, Live descriptors: {len(live)}")
+            
+            # Calculate match score - normalize by the smaller descriptor count
+            min_descriptors = min(len(enrolled), len(live))
+            match_score = match_count / max(min_descriptors, 1)
+            
+            logger.info(f"Descriptor match score: {match_score:.4f}")
+            return match_score
+            
+        except Exception as e:
+            logger.error(f"Error in descriptor matching: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 0.0
 
     def check_liveness(self, image_path: str) -> float:
         #final_score = 60% match + 40% liveness
@@ -98,9 +159,98 @@ class FaceRecognitionSystem:
         return {"score": round(final_score * 100, 2), "category": category, "is_flagged": flagged}
 
     def _extract_face_embedding(self, image_path: str):
-        """Extract ORB+SIFT features from detected face (offline, no model download)."""
+        """Extract HOG face embedding — same pipeline as enrollment for consistent distances."""
+        embedding = extract_face_embedding(image_path, self.face_cascade)
+        if embedding is None:
+            logger.error(f"HOG embedding failed for {image_path}")
+        else:
+            logger.info(f"HOG embedding extracted, dim={len(embedding)}, norm={np.linalg.norm(embedding):.4f}")
+        return embedding
+
+    def _extract_face_embedding_from_frame(self, frame):
+        """Extract a HOG face embedding directly from a webcam frame."""
+        if frame is None:
+            return None
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        for (scale, neighbors, min_sz) in [
+            (1.05, 4, (60, 60)),
+            (1.05, 3, (40, 40)),
+            (1.10, 2, (30, 30)),
+        ]:
+            faces = self.face_cascade.detectMultiScale(
+                gray, scaleFactor=scale, minNeighbors=neighbors, minSize=min_sz
+            )
+            if len(faces) > 0:
+                break
+
+        if len(faces) == 0:
+            return None
+
+        (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
+        margin = int(max(w, h) * 0.20)
+        x1 = max(0, x - margin)
+        y1 = max(0, y - margin)
+        x2 = min(frame.shape[1], x + w + margin)
+        y2 = min(frame.shape[0], y + h + margin)
+        face_roi = gray[y1:y2, x1:x2]
+        if face_roi.size == 0:
+            return None
+
+        return _hog_embedding(face_roi)
+
+    def _verify_face_consensus(self, user_id: str, frames) -> dict:
+        """Verify face identity using several captured frames and a consensus decision."""
+        enrolled_embedding = load_template(user_id, self.db_path, "face")
+        if enrolled_embedding is None or (isinstance(enrolled_embedding, np.ndarray) and enrolled_embedding.size == 0):
+            return {"status": "error", "message": "User face not enrolled."}
+
+        distances = []
+        frame_qualities = []
+
+        for frame in frames:
+            if frame is None:
+                continue
+            embedding = self._extract_face_embedding_from_frame(frame)
+            if embedding is None:
+                continue
+
+            distance = float(self._cosine_distance(enrolled_embedding, embedding))
+            distances.append(distance)
+            frame_qualities.append(float(self._frame_quality(frame)))
+
+        if not distances:
+            return {"status": "error", "message": "Could not detect face in provided webcam frames."}
+
+        # Use a consensus rule so one noisy frame cannot flip the result.
+        sorted_distances = sorted(distances)
+        median_distance = float(np.median(sorted_distances))
+        match_votes = sum(distance < SIMILARITY_THRESHOLD for distance in distances)
+        total_votes = len(distances)
+
+        # Match only when at least 2 frames agree and the median is safely below the threshold.
+        is_match = bool(match_votes >= 2 and median_distance < SIMILARITY_THRESHOLD)
+
+        liveness_score = 0.50
+        trust = self.calculate_confidence_score(median_distance, liveness_score)
+
+        return {
+            "status": "success",
+            "is_match": is_match,
+            "face_distance": round(median_distance, 6),
+            "distance_threshold": SIMILARITY_THRESHOLD,
+            "frame_distances": [round(float(d), 6) for d in distances],
+            "frame_votes": {"match": int(match_votes), "total": int(total_votes)},
+            "capture_quality": round(float(np.median(frame_qualities)), 2) if frame_qualities else None,
+            "liveness_score": liveness_score,
+            "trust_evaluation": trust,
+        }
+
+    def _extract_face_descriptors(self, image_path: str):
+        """Extract raw SIFT descriptors from detected face (not flattened)."""
         image = cv2.imread(image_path)
         if image is None:
+            logger.error(f"Failed to read image: {image_path}")
             return None
         
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -109,67 +259,94 @@ class FaceRecognitionSystem:
         )
         
         if len(faces) == 0:
+            logger.error(f"No faces detected in {image_path}")
             return None
+        
+        logger.info(f"Detected {len(faces)} face(s) in {image_path}")
         
         # Use the largest detected face
         (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
-        margin = int(max(w, h) * 0.1)
+        margin = int(max(w, h) * 0.15)
         x1 = max(0, x - margin)
         y1 = max(0, y - margin)
         x2 = min(image.shape[1], x + w + margin)
         y2 = min(image.shape[0], y + h + margin)
         face_roi = gray[y1:y2, x1:x2]
         
-        # Extract hybrid ORB+SIFT descriptors
-        orb = cv2.ORB_create(nfeatures=500)
+        logger.info(f"Face ROI size: {face_roi.shape}")
+        
+        # Enhance face region
+        face_roi = cv2.equalizeHist(face_roi)
+        
+        # Extract SIFT descriptors
         sift = cv2.SIFT_create()
+        kp, desc = sift.detectAndCompute(face_roi, None)
         
-        kp_orb, desc_orb = orb.detectAndCompute(face_roi, None)
-        kp_sift, desc_sift = sift.detectAndCompute(face_roi, None)
+        if desc is None or len(desc) < 5:
+            logger.warning(f"Insufficient SIFT features ({len(desc) if desc is not None else 0}), trying ORB")
+            orb = cv2.ORB_create(nfeatures=500)
+            kp, desc = orb.detectAndCompute(face_roi, None)
         
-        if desc_orb is None or len(desc_orb) < 10:
-            if desc_sift is None or len(desc_sift) < 10:
-                return None
-            descriptor = desc_sift.astype(np.float32).flatten()[:256]
-        else:
-            descriptor = desc_orb.astype(np.uint8).astype(np.float32).flatten()[:256]
+        if desc is None:
+            logger.error(f"No descriptors extracted from {image_path}")
+            return None
         
-        # Pad to fixed size if needed
-        if len(descriptor) < 256:
-            descriptor = np.pad(descriptor, (0, 256 - len(descriptor)), mode='constant')
-        
-        return descriptor[:256]
+        logger.info(f"Extracted {len(desc)} descriptors from {image_path}")
+        return desc.astype(np.float32)
 
     def verify_identity(self, user_id: str, live_image_path: str) -> dict:
         try:
+            # Load enrolled face embedding from pickle template
             enrolled_embedding = load_template(user_id, self.db_path, "face")
+
             if enrolled_embedding is None or (isinstance(enrolled_embedding, np.ndarray) and enrolled_embedding.size == 0):
+                logger.error(f"User face not enrolled for {user_id}")
                 return {"status": "error", "message": "User face not enrolled."}
 
-            # 1. Extract live face embedding using offline method
+            logger.info(f"=== Starting face verification for {user_id} ===")
+            logger.info(f"Loaded enrolled embedding shape: {np.asarray(enrolled_embedding).shape}")
+
+            # BUG FIX: Use _extract_face_embedding (flattened 256-d L2-normalized vector)
+            # to match exactly what enrollment.py saves via _extract_robust_embedding.
+            # Previously _extract_face_descriptors (raw 2D SIFT matrix) was used here,
+            # causing a shape/format mismatch with the enrolled flat vector → always no match.
             live_embedding = self._extract_face_embedding(live_image_path)
             if live_embedding is None:
                 return {"status": "error", "message": "Could not detect face in provided image."}
 
-            distance = float(self._cosine_distance(enrolled_embedding, live_embedding))
-            is_match = float(distance) < float(SIMILARITY_THRESHOLD)
+            logger.info(f"Live embedding shape: {np.asarray(live_embedding).shape}")
 
-            # 2. Liveness Detection
+            # BUG FIX: Compare using cosine distance on the matching flat vectors.
+            # Previously BFMatcher was applied to mismatched shapes, scoring ~0 always.
+            distance = self._cosine_distance(enrolled_embedding, live_embedding)
+            logger.info(f"Cosine distance: {distance:.6f}")
+
+            # SIMILARITY_THRESHOLD is a cosine *distance* threshold (lower = more similar).
+            # Default is 0.32 in config.py; same-face shots typically score 0.05-0.20, different faces 0.30+.
+            # Webcam captures may have higher variance due to lighting/angle, so 0.32 provides safe buffer.
+            is_match = bool(distance < SIMILARITY_THRESHOLD)
+            logger.info(f"Distance threshold: {SIMILARITY_THRESHOLD}, is_match: {is_match}")
+
+            # Liveness Detection
             liveness_score = self.check_liveness(live_image_path)
+            logger.info(f"Liveness score: {liveness_score:.4f}")
 
-            # 3. Confidence & Trust Scoring
+            # Confidence & Trust Scoring (reuse existing helper; pass distance directly)
             trust = self.calculate_confidence_score(distance, liveness_score)
 
             return {
                 "status": "success",
                 "is_match": is_match,
-                "distance": distance,
+                "face_distance": round(float(distance), 6),
+                "distance_threshold": SIMILARITY_THRESHOLD,
                 "liveness_score": liveness_score,
-                "trust_evaluation": trust
+                "trust_evaluation": trust,
             }
 
         except Exception as e:
             import traceback
+            logger.error(f"Face verification error: {str(e)}")
+            logger.error(traceback.format_exc())
             return {"status": "error", "message": f"{str(e)}\n{traceback.format_exc()}"}
 
     def verify_fingerprint(self, user_id: str, live_image_path: str) -> dict:
@@ -183,7 +360,7 @@ class FaceRecognitionSystem:
                 return {"status": "error", "message": "No valid fingerprint features found in uploaded image."}
 
             score = self._fingerprint_similarity(enrolled_template, live_template)
-            is_match = score >= 0.20
+            is_match = bool(score >= 0.20)
 
             return {
                 "status": "success",
@@ -219,7 +396,7 @@ class FaceRecognitionSystem:
                 if enrolled_fingerprint_template is None:
                     return {"status": "error", "message": "User fingerprint not enrolled."}
 
-            best_frame, best_quality, cancelled, preview_active = self._capture_best_frame(
+            best_frame, best_quality, cancelled, preview_active, top_frames = self._capture_best_frame(
                 camera_index=camera_index,
                 timeout_seconds=timeout_seconds,
                 modality=modality,
@@ -254,12 +431,15 @@ class FaceRecognitionSystem:
                     adaptive_threshold = self._adaptive_fingerprint_threshold(best_quality)
                     result = {
                         "status": "success",
-                        "is_match": score >= adaptive_threshold,
+                        "is_match": bool(score >= adaptive_threshold),
                         "fingerprint_similarity": round(float(score), 4),
                         "threshold": round(float(adaptive_threshold), 4),
                     }
             else:
-                result = self.verify_identity(user_id, captured_path)
+                face_frames = [frame for _, _, frame in top_frames if frame is not None]
+                result = self._verify_face_consensus(user_id, face_frames)
+                if result.get("status") == "success":
+                    result["distance_threshold"] = SIMILARITY_THRESHOLD
 
             if result.get("status") == "success":
                 result["capture_quality"] = round(float(best_quality), 2)
@@ -293,6 +473,7 @@ class FaceRecognitionSystem:
         best_frame = None
         best_metric = -1.0
         best_quality = -1.0
+        top_frames = []
         cancelled = False
 
         try:
@@ -322,6 +503,9 @@ class FaceRecognitionSystem:
                     best_metric = score_metric
                     best_quality = quality
                     best_frame = frame.copy()
+
+                top_frames.append((score_metric, quality, frame.copy()))
+                top_frames = sorted(top_frames, key=lambda item: item[0], reverse=True)[:3]
 
                 if preview_active:
                     try:
@@ -368,7 +552,7 @@ class FaceRecognitionSystem:
                         # Headless environment, continue capture without preview.
                         preview_active = False
 
-            return best_frame, best_quality, cancelled, preview_active
+            return best_frame, best_quality, cancelled, preview_active, top_frames
         finally:
             cap.release()
             if preview_active:

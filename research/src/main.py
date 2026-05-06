@@ -1,16 +1,27 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import uuid
+import traceback
+import logging
 from src.enrollment import EnrollmentSystem
 from src.recognition import FaceRecognitionSystem
 from src.anomaly_model import AnomalyDetectionModel
 from src.config import LOG_DATA_PATH, RAW_IMAGES_PATH
 
+logging.basicConfig(level=logging.DEBUG)
+
 app = FastAPI(title="PRISM AI Core")
+
+# ── DEBUG: surface full traceback in 500 responses so root cause is visible ──
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    logging.getLogger("PRISM_MAIN").error(f"Unhandled exception on {request.url}:\n{tb}")
+    return PlainTextResponse(f"500 Internal Server Error\n\n{tb}", status_code=500)
+# ────────────────────────────────────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,
@@ -146,6 +157,25 @@ async def verify_fingerprint(user_id: str = Form(...), file: UploadFile = File(.
     return await verify_user(user_id=user_id, modality="fingerprint", file=file)
 
 
+import numpy as np
+
+def _sanitize(obj):
+    """Recursively convert numpy scalars/arrays to native Python types for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: _sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_sanitize(v) for v in obj]
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.floating,)):
+        return float(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    return obj
+
+
 @app.post("/api/attendance/realtime")
 async def attendance_realtime(
     user_id: str = Form(...),
@@ -164,14 +194,15 @@ async def attendance_realtime(
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))
     mode = result.get("modality", modality)
+    safe_result = _sanitize(result)
     return JSONResponse(
         {
             "message": (
                 f"Realtime {mode} verified"
-                if result.get("is_match")
+                if safe_result.get("is_match")
                 else f"Realtime {mode} captured but not matched"
             ),
-            "result": result,
+            "result": safe_result,
         }
     )
 
