@@ -54,6 +54,14 @@ export const markAttendance = async (req, res) => {
                     confidenceScore = response.data.result?.trust_evaluation?.score || 0;
                     console.log(`Confidence Score: ${confidenceScore}%`);
 
+                    if (response.data.result?. is_match === false) {
+                        studentRecord.status = "Absent";
+                        studentRecord.confidenceScore = confidenceScore;
+                        studentRecord.verificationResult = response.data.result;
+                        console.log("Verification failed. Attendance marked as Absent.");
+                        break;
+                    }
+
                     if (confidenceScore < 50) {
                         studentRecord.status = "Absent";
                         studentRecord.confidenceScore = confidenceScore;
