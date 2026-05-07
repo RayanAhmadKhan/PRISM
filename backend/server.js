@@ -4,6 +4,7 @@ import { startAttendanceCron } from "./cron/attendanceCron.js";
 import app from "./app.js";
 
 env.config();
+const port = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== "test") {
   console.log("Connecting to the database...");
