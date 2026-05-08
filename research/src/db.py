@@ -2,6 +2,7 @@ import os
 import numpy as np
 from pymongo import MongoClient, ASCENDING
 from pymongo.errors import ConnectionFailure
+from src.config import MONGO_URI
 from src.utils import logger
 
 # ---------------------------------------------------------------------------
@@ -19,7 +20,7 @@ def get_db():
     if _db is not None:
         return _db
 
-    uri = os.environ.get("MONGO_URI")
+    uri = MONGO_URI
 
     if not uri:
         raise RuntimeError("MONGO_URI environment variable is not set")
@@ -34,7 +35,7 @@ def get_db():
         _client.admin.command("ping")
 
         # Use DB from URI (recommended)
-        _db = _client.get_database()
+        _db = _client["prism_db"]
 
         # Ensure indexes
         _ensure_indexes(_db)

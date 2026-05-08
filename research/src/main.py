@@ -14,7 +14,6 @@ from src.config import LOG_DATA_PATH, RAW_IMAGES_PATH
 logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(title="PRISM AI Core")
-app = FastAPI()
 
 @app.get("/debug/pkl-files")
 def check_pkl_files():

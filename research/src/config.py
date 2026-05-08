@@ -7,7 +7,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ---------------------------------------------------------------------------
 # Set MONGO_URI in your environment (.env, Render, Railway, etc.)
 # Example: mongodb+srv://user:pass@cluster.mongodb.net/prism_db
-MONGO_URI = os.environ.get("MONGO_URI", "")
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
 
 # ---------------------------------------------------------------------------
 # Legacy local paths — kept only for RAW_IMAGES_PATH (temp upload staging).
