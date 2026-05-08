@@ -3,11 +3,11 @@ import React from 'react'
 const Table = ({ columns, rows }) => {
   return (
     <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
-      <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+      <table className="w-full bg-linear-to-r from-zinc-900 via-zinc-800 to-zinc-900">
 
         {/* Header */}
         <thead>
-          <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+          <tr className="border-b-2 border-blue-600/50 bg-linear-to-r from-blue-950 via-blue-900 to-blue-950">
             {columns.map((col, index) => (
               <th 
                 key={index} 
