@@ -88,6 +88,12 @@ class EnrollmentSystem:
             cv2.data.haarcascades + "haarcascade_frontalface_alt.xml"
         )
 
+        # 🔥 CRITICAL FIX: Ensure the DB directory exists before any save attempt.
+        # On cloud platforms like Render the working directory differs from local,
+        # so the folder may not exist — causing save_template() to fail silently.
+        os.makedirs(self.db_path, exist_ok=True)
+        logger.info(f"Enrollment DB path ready: {self.db_path}")
+
     def enroll_face(self, user_id: str, image_path: str) -> bool:
         """Extract HOG face embedding and save to enrollment DB."""
         self.last_error = None
@@ -97,6 +103,8 @@ class EnrollmentSystem:
             embedding = extract_face_embedding(prepared_path, self.face_cascade)
 
             if embedding is not None:
+                print(f"Saving PKL for: {user_id}")
+                print(f"DB PATH: {self.db_path}")
                 save_template(user_id, embedding, self.db_path, "face")
                 logger.info(f"Face enrolled for {user_id}, dim={len(embedding)}")
                 return True
