@@ -1,11 +1,11 @@
 fastapi
 uvicorn
 python-multipart
-deepface
+deepface==0.0.79
+tensorflow-cpu==2.10.0
 pandas
 scikit-learn
-opencv-python
-mediapipe
-tf-keras
+opencv-python-headless
+mediapipe==0.10.9
 matplotlib
 seaborn
