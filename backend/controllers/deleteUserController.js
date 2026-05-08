@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 // Direct collection reference — no Mongoose model needed for student_images
 // since it is written by the Python/FastAPI biometric service.
 const studentImagesCollection = () =>
-  mongoose.connection.db.collection("student_images");
+  mongoose.connection.useDb("prism_db").collection("student_images");
 
 export const deleteUser = async (req, res) => {
   const { type, id } = req.query;

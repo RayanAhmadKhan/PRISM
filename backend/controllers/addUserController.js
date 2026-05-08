@@ -14,99 +14,97 @@ export const addUser = async (req, res) => {
     instructor: Instructor
   };
 
+  let savedUser = null;
+
   try {
     const { type, ...userData } = req.body;
-
     const model = models[type];
 
     if (!model) {
-      return res.status(400).json({ message: "Invalid user type" });
+      return res.status(400).json({ success: false, message: "Invalid user type" });
     }
 
-    // 🔹 Validation
     if (type === "student" && !userData.rollNumber) {
-      return res.status(400).json({ message: "rollNumber required" });
+      return res.status(400).json({ success: false, message: "rollNumber required" });
     }
 
-    // optional fields safety
     userData.sections = [];
 
-    // 🔹 Save User
-    let savedUser;
-    try {
-      savedUser = await new model(userData).save();
-    } catch (dbError) {
-      return res.status(500).json({
-        message: "Database save failed",
-        error: dbError.message
+    // 🔹 Files
+    const faceFile = req.files?.face?.[0];
+    const fingerprintFile = req.files?.fingerprint?.[0];
+
+    // ❗ Strict validation BEFORE saving user
+    if (type === "student" && (!faceFile || !fingerprintFile)) {
+      return res.status(400).json({
+        success: false,
+        message: "Face and Fingerprint both are required"
       });
     }
 
+    // 🔹 Save User (TEMP)
+    savedUser = await new model(userData).save();
     const userId = savedUser.rollNumber || savedUser._id;
 
-    // 🔹 Files (SAFE)
-    const faceFile = req.files?.face?.[0];
-    const fingerprintFile = req.files?.fingerprint?.[0];
-    console.log("Received files:", {
-      face: faceFile ? faceFile.originalname : "No face file",
-      fingerprint: fingerprintFile ? fingerprintFile.originalname : "No fingerprint file"
-    });
-
     // 🔹 Upload Face
-    if (type === "student" && faceFile) {
-      try {
-        const faceForm = new FormData();
-        faceForm.append("user_id", userId);
-        faceForm.append("file", faceFile.buffer, {
-          filename: faceFile.originalname
-        });
+    if (type === "student") {
+      const faceForm = new FormData();
+      faceForm.append("user_id", userId);
+      faceForm.append("file", faceFile.buffer, {
+        filename: faceFile.originalname
+      });
 
-        await axios.post(
-          process.env.MODEL_API_URL + "/api/enroll/face",
-          faceForm,
-          {
-            headers: faceForm.getHeaders(),
-            timeout: 60000
-          }
-        );
-      } catch (err) {
-        console.error("Face upload failed:", err.message);
-      }
+      await axios.post(
+        process.env.MODEL_API_URL + "/api/enroll/face",
+        faceForm,
+        {
+          headers: faceForm.getHeaders(),
+          timeout: 60000
+        }
+      );
     }
 
     // 🔹 Upload Fingerprint
-    if (type === "student" && fingerprintFile) {
-      try {
-        const fingerForm = new FormData();
-        fingerForm.append("user_id", userId);
-        fingerForm.append("file", fingerprintFile.buffer, {
-          filename: fingerprintFile.originalname
-        });
+    if (type === "student") {
+      const fingerForm = new FormData();
+      fingerForm.append("user_id", userId);
+      fingerForm.append("file", fingerprintFile.buffer, {
+        filename: fingerprintFile.originalname
+      });
 
-        await axios.post(
-          process.env.MODEL_API_URL + "/api/enroll/fingerprint",
-          fingerForm,
-          {
-            headers: fingerForm.getHeaders(),
-            timeout: 60000
-          }
-        );
-      } catch (err) {
-        console.error("Fingerprint upload failed:", err.message);
-      }
+      await axios.post(
+        process.env.MODEL_API_URL + "/api/enroll/fingerprint",
+        fingerForm,
+        {
+          headers: fingerForm.getHeaders(),
+          timeout: 60000
+        }
+      );
     }
 
-    // 🔹 Final Response
+    // ✅ SUCCESS
     return res.status(201).json({
+      success: true,
       message: "User created successfully",
       user: savedUser
     });
 
   } catch (error) {
-    console.error("Controller Error:", error.message);
+    console.error("Controller Error:", error.response?.data || error.message);
+
+    // 🔴 ROLLBACK
+    if (savedUser) {
+      try {
+        await savedUser.deleteOne();
+        console.log("Rollback: User deleted",);
+      } catch (rollbackErr) {
+        console.error("Rollback failed:", rollbackErr.message);
+      }
+    }
 
     return res.status(500).json({
-      message: "Unexpected server error",
+      success: false,
+      message: "User creation failed. Rolled back.",
       error: error.message
     });
   }

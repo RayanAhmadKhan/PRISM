@@ -9,6 +9,7 @@ const UserManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editFormData, setEditFormData] = useState({
     name: "",
     email: "",
@@ -91,8 +92,29 @@ const UserManagement = () => {
     }
   };
 
+  const openAddModal = () => {
+    setError(null);
+    setSuccess(null);
+    setIsSubmitting(false);
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      type: "student",
+      rollNumber: "",
+      adminID: "",
+      instructorID: ""
+    });
+    setShowAddModal(true);
+  };
+
   const handleAddUser = async (e) => {
     e.preventDefault();
+
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
     try {
       const token = localStorage.getItem("token");
 
@@ -108,19 +130,41 @@ const UserManagement = () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+
+      // ✅ Close modal regardless of success or failure
+      setShowAddModal(false);
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to add user");
+      }
 
       setSuccess("User added successfully!");
-      setShowAddModal(false);
-      setFormData({ name: "", email: "", password: "", type: "student", rollNumber: "", adminID: "", instructorID: "" });
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        type: "student",
+        rollNumber: "",
+        adminID: "",
+        instructorID: ""
+      });
+
       fetchUsers();
+
       setTimeout(() => setSuccess(null), 3000);
+
     } catch (err) {
-      setError(err.message);
+      // ❌ Show error but modal already closed
+      setError(err.message || "User creation failed");
+
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleEditUser = (user) => {
+    setError(null);
+    setSuccess(null);
     setEditingUser(user);
     setEditFormData({ name: user.name, email: user.email, password: "" });
     setShowEditModal(true);
@@ -128,6 +172,10 @@ const UserManagement = () => {
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
     try {
       const token = localStorage.getItem("token");
 
@@ -158,6 +206,8 @@ const UserManagement = () => {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message || "Failed to update user");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -224,7 +274,7 @@ const UserManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={openAddModal}
             className="bg-blue-700 w-full sm:w-35 h-10 font-bold rounded-sm cursor-pointer hover:bg-blue-900 text-white"
           >
             + Add New User
@@ -233,9 +283,9 @@ const UserManagement = () => {
       </div>
 
       <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
-        <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+        <table className="w-full bg-linear-to-r from-zinc-900 via-zinc-800 to-zinc-900">
           <thead>
-            <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+            <tr className="border-b-2 border-blue-600/50 bg-linear-to-r from-blue-950 via-blue-900 to-blue-950">
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Name</th>
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">ID</th>
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Email</th>
@@ -408,14 +458,20 @@ const UserManagement = () => {
               <div className="flex gap-3 mt-5">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-700 hover:bg-blue-800 p-2 rounded font-bold text-white"
+                  disabled={isSubmitting}
+                  className={`flex-1 p-2 rounded font-bold text-white ${
+                    isSubmitting
+                      ? "bg-blue-900 cursor-not-allowed"
+                      : "bg-blue-700 hover:bg-blue-800"
+                  }`}
                 >
-                  Add User
+                  {isSubmitting ? "Adding User..." : "Add User"}
                 </button>
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white"
+                  className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
@@ -498,14 +554,20 @@ const UserManagement = () => {
               <div className="flex gap-3 mt-5">
                 <button
                   type="submit"
-                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 p-2 rounded font-bold text-white"
+                  disabled={isSubmitting}
+                  className={`flex-1 p-2 rounded font-bold text-white ${
+                    isSubmitting
+                      ? "bg-yellow-700 cursor-not-allowed"
+                      : "bg-yellow-600 hover:bg-yellow-700"
+                  }`}
                 >
-                  Update User
+                  {isSubmitting ? "Updating..." : "Update User"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setShowEditModal(false); setEditingUser(null); }}
-                  className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white"
+                  disabled={isSubmitting}
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 bg-gray-700 hover:bg-gray-800 p-2 rounded font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
