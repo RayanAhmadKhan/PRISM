@@ -2,6 +2,9 @@ import Attendance from "../models/attendance.js";
 import Students from "../models/students.js";
 import axios from "axios";
 import FormData from "form-data";
+import env from "dotenv";
+
+env.config();
 
 export const markAttendance = async (req, res) => {
     try{
@@ -44,7 +47,7 @@ export const markAttendance = async (req, res) => {
                     formData.append("show_preview", "True");
 
                     response = await axios.post(
-                        "http://localhost:8000/api/attendance/realtime",
+                        process.env.MODEL_API_URL + "/api/attendance/realtime",
                         formData,
                         { headers: formData.getHeaders() }
                     );

@@ -3,7 +3,8 @@ import cv2
 import numpy as np
 import os
 from src.utils import logger, save_template
-from src.config import ENROLLMENT_DB_PATH
+# NOTE: db_path arguments are retained in method signatures for backwards-compatibility
+# but are no longer used — all persistence now goes through MongoDB via save_template.
 
 
 # ---------------------------------------------------------------------------
@@ -81,21 +82,17 @@ def _hog_embedding(roi: np.ndarray) -> np.ndarray:
 
 
 class EnrollmentSystem:
-    def __init__(self, db_path=ENROLLMENT_DB_PATH):
+    def __init__(self, db_path=None):
+        # db_path is ignored — retained only for backwards-compatible instantiation.
         self.db_path = db_path
         self.last_error = None
         self.face_cascade = cv2.CascadeClassifier(
             cv2.data.haarcascades + "haarcascade_frontalface_alt.xml"
         )
-
-        # 🔥 CRITICAL FIX: Ensure the DB directory exists before any save attempt.
-        # On cloud platforms like Render the working directory differs from local,
-        # so the folder may not exist — causing save_template() to fail silently.
-        os.makedirs(self.db_path, exist_ok=True)
-        logger.info(f"Enrollment DB path ready: {self.db_path}")
+        logger.info("EnrollmentSystem initialised (MongoDB backend).")
 
     def enroll_face(self, user_id: str, image_path: str) -> bool:
-        """Extract HOG face embedding and save to enrollment DB."""
+        """Extract HOG face embedding and persist to MongoDB."""
         self.last_error = None
         try:
             logger.info(f"Enrolling face for {user_id}...")
@@ -103,9 +100,7 @@ class EnrollmentSystem:
             embedding = extract_face_embedding(prepared_path, self.face_cascade)
 
             if embedding is not None:
-                print(f"Saving PKL for: {user_id}")
-                print(f"DB PATH: {self.db_path}")
-                save_template(user_id, embedding, self.db_path, "face")
+                save_template(user_id, embedding, template_type="face")
                 logger.info(f"Face enrolled for {user_id}, dim={len(embedding)}")
                 return True
 
@@ -130,11 +125,11 @@ class EnrollmentSystem:
         return image_path
 
     # ------------------------------------------------------------------
-    # Fingerprint enrollment (unchanged)
+    # Fingerprint enrollment
     # ------------------------------------------------------------------
     def enroll_fingerprint_simulated(self, user_id: str, template_data: str) -> bool:
         try:
-            save_template(user_id, template_data, self.db_path, "fingerprint")
+            save_template(user_id, template_data, template_type="fingerprint")
             return True
         except Exception:
             return False
@@ -144,7 +139,7 @@ class EnrollmentSystem:
             template = self._extract_fingerprint_template(image_path)
             if template is None:
                 return False
-            save_template(user_id, template, self.db_path, "fingerprint")
+            save_template(user_id, template, template_type="fingerprint")
             return True
         except Exception as e:
             logger.error(f"Fingerprint enrollment failed for {user_id}: {e}")

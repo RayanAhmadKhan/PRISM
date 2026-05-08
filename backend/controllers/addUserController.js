@@ -3,6 +3,9 @@ import Admin from "../models/admin.js";
 import Instructor from "../models/instructors.js";
 import axios from "axios";
 import FormData from "form-data";
+import env from "dotenv";
+
+env.config();
 
 export const addUser = async (req, res) => {
   const models = {
@@ -59,11 +62,11 @@ export const addUser = async (req, res) => {
         });
 
         await axios.post(
-          "http://localhost:8000/api/enroll/face",
+          process.env.MODEL_API_URL + "/api/enroll/face",
           faceForm,
           {
             headers: faceForm.getHeaders(),
-            timeout: 15000
+            timeout: 60000
           }
         );
       } catch (err) {
@@ -81,11 +84,11 @@ export const addUser = async (req, res) => {
         });
 
         await axios.post(
-          "http://localhost:8000/api/enroll/fingerprint",
+          process.env.MODEL_API_URL + "/api/enroll/fingerprint",
           fingerForm,
           {
             headers: fingerForm.getHeaders(),
-            timeout: 15000
+            timeout: 60000
           }
         );
       } catch (err) {
