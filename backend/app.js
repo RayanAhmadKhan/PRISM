@@ -31,7 +31,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://prism-chi-indol.vercel.app/'
+    'https://prism-chi-indol.vercel.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
