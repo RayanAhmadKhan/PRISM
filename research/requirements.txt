@@ -17,3 +17,4 @@ matplotlib==3.7.1
 seaborn==0.12.2
 
 pymongo==4.6.3
+python-dotenv
