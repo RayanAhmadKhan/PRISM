@@ -21,8 +21,13 @@ from src.utils import logger
 # ---------------------------------------------------------------------------
 # Connection
 # ---------------------------------------------------------------------------
-
-_client: MongoClient | None = None
+uri = os.environ.get("MONGO_URI") 
+_client = MongoClient(
+    uri,
+    serverSelectionTimeoutMS=5000,
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
 _db = None
 
 
@@ -32,7 +37,6 @@ def get_db():
     if _db is not None:
         return _db
 
-    uri = os.environ.get("MONGO_URI")
     if not uri:
         raise RuntimeError(
             "MONGO_URI environment variable is not set. "
