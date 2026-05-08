@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import Navbar from "../../../components/Navbar";
 import StCourse from "./StCourse";
 import StProfile from "./StProfile";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 // ── Semester helpers ──────────────────────────────────────────────────────────
 // Use T12:00:00 to avoid UTC-midnight timezone shift (e.g. UTC+5 shifts date back 1 day)
@@ -96,7 +97,7 @@ const StudentDash = () => {
   // ── Fetch sections ──
   useEffect(() => {
     if (!studentId) return;
-    fetch(`http://localhost:5000/getSection?id=${studentId}`, {
+    fetch(`${BASE_URL}/getSection?id=${studentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())
@@ -110,7 +111,7 @@ const StudentDash = () => {
   useEffect(() => {
     if (!studentId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/getAttendanceRecord?id=${studentId}`, {
+    fetch(`${BASE_URL}/getAttendanceRecord?id=${studentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())

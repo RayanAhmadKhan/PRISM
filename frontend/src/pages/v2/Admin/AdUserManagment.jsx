@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -34,7 +36,7 @@ const UserManagement = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5000/getAllUsers", {
+      const response = await fetch(`${BASE_URL}/getAllUsers`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -123,7 +125,7 @@ const UserManagement = () => {
         if (formData[key]) form.append(key, formData[key]);
       });
 
-      const res = await fetch("http://localhost:5000/addUser", {
+      const res = await fetch(`${BASE_URL}/addUser`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: form
@@ -187,7 +189,7 @@ const UserManagement = () => {
         ...(editFormData.password.trim() && { password: editFormData.password.trim() })
       };
 
-      const res = await fetch("http://localhost:5000/updateUserInfo", {
+      const res = await fetch(`${BASE_URL}/updateUserInfo`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -217,7 +219,7 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:5000/deleteUser?type=${type}&id=${id}`, {
+      const response = await fetch(`${BASE_URL}/deleteUser?type=${type}&id=${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

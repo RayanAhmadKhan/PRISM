@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 
 const TchProfile = ({ instructorId, instructorName, token }) => {
   const [sectionCount, setSectionCount] = useState(0);
@@ -18,7 +20,7 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
 
   useEffect(() => {
     if (!instructorId) return;
-    fetch(`http://localhost:5000/getSection?id=${instructorId}`, {
+    fetch(`${BASE_URL}/getSection?id=${instructorId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((r) => r.json())
@@ -70,7 +72,7 @@ const TchProfile = ({ instructorId, instructorName, token }) => {
 
     try {
       setSaving(true);
-      const res = await fetch("http://localhost:5000/changePassword", {
+      const res = await fetch(`${BASE_URL}/changePassword`, {
         method: "PATCH",
         headers: {
           "Content-Type":  "application/json",

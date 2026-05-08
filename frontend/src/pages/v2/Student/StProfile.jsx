@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 
 const StProfile = ({ studentId, token, decoded }) => {
   const [profile,      setProfile]      = useState(null);
@@ -14,7 +16,7 @@ const StProfile = ({ studentId, token, decoded }) => {
 
   useEffect(() => {
     if (!studentId) return;
-    fetch(`http://localhost:5000/getSection?id=${studentId}`, {
+    fetch(`${BASE_URL}/getSection?id=${studentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())
@@ -57,7 +59,7 @@ const StProfile = ({ studentId, token, decoded }) => {
 
     try {
       setSaving(true);
-      const res = await fetch("http://localhost:5000/changePassword", {
+      const res = await fetch(`${BASE_URL}/changePassword`, {
         method: "PATCH",
         headers: {
           "Content-Type":  "application/json",

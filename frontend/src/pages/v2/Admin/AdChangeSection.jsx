@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const AdChangeSection = () => {
   const [courses, setCourses] = useState([]);
@@ -19,7 +20,7 @@ const AdChangeSection = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/getCourse", {
+        const res = await fetch(`${BASE_URL}/getCourse`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error("Failed to fetch courses");
@@ -48,7 +49,7 @@ const AdChangeSection = () => {
         setSectionsLoading(true);
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:5000/getSection?courseId=${formData.courseId}`,
+          `${BASE_URL}/getSection?courseId=${formData.courseId}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -106,7 +107,7 @@ const AdChangeSection = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/changeSection", {
+      const res = await fetch(`${BASE_URL}/changeSection`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,

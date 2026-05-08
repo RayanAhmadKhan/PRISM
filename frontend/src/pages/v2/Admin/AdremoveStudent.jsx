@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const AdRemoveStudent = () => {
   const [courses, setCourses] = useState([]);
@@ -18,7 +19,7 @@ const AdRemoveStudent = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/getCourse", {
+        const res = await fetch(`${BASE_URL}/getCourse`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error("Failed to fetch courses");
@@ -43,7 +44,7 @@ const AdRemoveStudent = () => {
         setSectionsLoading(true);
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:5000/getSection?courseId=${formData.courseId}`,
+          `${BASE_URL}/getSection?courseId=${formData.courseId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!res.ok) throw new Error("Failed to fetch sections");
@@ -78,7 +79,7 @@ const AdRemoveStudent = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/removeStudentFromSection", {
+      const res = await fetch(`${BASE_URL}/removeStudentFromSection`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

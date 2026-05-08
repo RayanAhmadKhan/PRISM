@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 const AttendanceQA = () => {
   const [attendance, setAttendance] = useState([])
   const [sections, setSections] = useState([])
@@ -33,7 +35,7 @@ const AttendanceQA = () => {
   }
 
   const fetchAttendance = async () => {
-    const res = await fetch('http://localhost:5000/getAttendanceRecord', {
+    const res = await fetch(`${BASE_URL}/getAttendanceRecord`, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -61,7 +63,7 @@ const AttendanceQA = () => {
   }
 
   const fetchSections = async () => {
-    const res = await fetch('http://localhost:5000/getSection', {
+    const res = await fetch(`${BASE_URL}/getSection`, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -70,7 +72,7 @@ const AttendanceQA = () => {
   }
 
   const fetchCourses = async () => {
-    const res = await fetch('http://localhost:5000/getCourse', {
+    const res = await fetch(`${BASE_URL}/getCourse`, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -117,9 +119,9 @@ const AttendanceQA = () => {
       </div>
 
       <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
-        <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+        <table className="w-full bg-linear-to-r from-zinc-900 via-zinc-800 to-zinc-900">
           <thead>
-            <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+            <tr className="border-b-2 border-blue-600/50 bg-linear-to-r from-blue-950 via-blue-900 to-blue-950">
               {["Date", "Section", "Course Code", "Total Students", "Present", "Absent", "Status", "Action"].map((col, index) => (
                 <th key={index} className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">
                   {col}

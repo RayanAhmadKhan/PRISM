@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-form: Change Section
@@ -16,7 +17,7 @@ const ChangeSection = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/getCourse", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getCourse`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setCourses(d.courses || [])).catch(console.error);
   }, []);
 
@@ -28,7 +29,7 @@ const ChangeSection = () => {
     }
     setSectionsLoading(true);
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:5000/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(d => { setSections(d.sections || []); setFormData(p => ({ ...p, oldSectionName: "", newSectionName: "" })); })
       .catch(() => setError("Failed to load sections."))
@@ -48,7 +49,7 @@ const ChangeSection = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/changeSection", {
+      const res = await fetch(`${BASE_URL}/changeSection`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ rollNumber: rollNumber.trim(), courseId, oldSectionName, newSectionName })
@@ -170,7 +171,7 @@ const EnrollStudent = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/getCourse", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getCourse`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setCourses(d.courses || [])).catch(console.error);
   }, []);
 
@@ -178,7 +179,7 @@ const EnrollStudent = () => {
     if (!formData.courseId) { setSections([]); setFormData(p => ({ ...p, sectionName: "" })); return; }
     setSectionsLoading(true);
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:5000/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(d => { setSections(d.sections || []); setFormData(p => ({ ...p, sectionName: "" })); })
       .catch(() => setError("Failed to load sections."))
@@ -197,7 +198,7 @@ const EnrollStudent = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/addStudentInSection", {
+      const res = await fetch(`${BASE_URL}/addStudentInSection`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ rollNumber: rollNumber.trim(), courseId, sectionName })
@@ -306,7 +307,7 @@ const RemoveStudent = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/getCourse", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getCourse`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setCourses(d.courses || [])).catch(console.error);
   }, []);
 
@@ -314,7 +315,7 @@ const RemoveStudent = () => {
     if (!formData.courseId) { setSections([]); setFormData(p => ({ ...p, sectionName: "" })); return; }
     setSectionsLoading(true);
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:5000/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getSection?courseId=${formData.courseId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(d => { setSections(d.sections || []); setFormData(p => ({ ...p, sectionName: "" })); })
       .catch(() => setError("Failed to load sections."))
@@ -333,7 +334,7 @@ const RemoveStudent = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/removeStudentFromSection", {
+      const res = await fetch(`${BASE_URL}/removeStudentFromSection`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ rollNumber: rollNumber.trim(), sectionName, courseId })
@@ -457,7 +458,7 @@ const AdSectionManagment = () => {
   const fetchSections = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/getSection", {
+      const response = await fetch(`${BASE_URL}/getSection`, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
       });
       if (!response.ok) throw new Error("Failed to fetch sections");
@@ -487,13 +488,13 @@ const AdSectionManagment = () => {
 
   const fetchCourses = () => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/getCourse", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getCourse`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setCourses(d.courses || [])).catch(console.error);
   };
 
   const fetchInstructors = () => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/getAllUsers", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getAllUsers`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(d => setInstructors(d.instructors || [])).catch(console.error);
   };
 
@@ -501,7 +502,7 @@ const AdSectionManagment = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/section", {
+      const res = await fetch(`${BASE_URL}/section`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify(formData)
@@ -537,7 +538,7 @@ const AdSectionManagment = () => {
       if (editFormData.year)               body.year        = editFormData.year;
       if (editFormData.courseCode)         body.courseCode  = editFormData.courseCode;
       if (editFormData.instructor)         body.instructor  = editFormData.instructor;
-      const res = await fetch("http://localhost:5000/updateSection", {
+      const res = await fetch(`${BASE_URL}/updateSection`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify(body)
@@ -556,7 +557,7 @@ const AdSectionManagment = () => {
     if (!window.confirm("Are you sure you want to delete this section?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/deleteSection?sectionId=${sectionId}`, {
+      const res = await fetch(`${BASE_URL}/deleteSection?sectionId=${sectionId}`, {
         method: "DELETE", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
       });
       if (!res.ok) throw new Error("Failed to delete section");

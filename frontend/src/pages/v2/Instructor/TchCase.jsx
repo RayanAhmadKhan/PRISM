@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const TchCase = ({ instructorId, token }) => {
   const [flaggedCases, setFlaggedCases] = useState([]);
@@ -11,7 +12,7 @@ const TchCase = ({ instructorId, token }) => {
   useEffect(() => {
     if (!instructorId) return;
 
-    fetch(`http://localhost:5000/getFlaggedCases?markedBy=${instructorId}`, {
+    fetch(`${BASE_URL}/getFlaggedCases?markedBy=${instructorId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -28,7 +29,7 @@ const TchCase = ({ instructorId, token }) => {
     console.log(`Performing action: ${action} on attendanceId: ${item.attendanceId}, studentId: ${item.studentId}`);
 
     try {
-      const res = await fetch("http://localhost:5000/flagApproval", {
+      const res = await fetch(`${BASE_URL}/flagApproval`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

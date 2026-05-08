@@ -8,6 +8,9 @@ import AdAttendanceQA from "./AdAttendanceQA";
 
 import { jwtDecode } from "jwt-decode";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
+
 const AdminDash = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [stats, setStats] = useState({
@@ -29,7 +32,7 @@ const AdminDash = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const usersRes = await fetch("http://localhost:5000/getAllUsers", {
+      const usersRes = await fetch(`${BASE_URL}/getAllUsers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const usersData = await usersRes.json();
@@ -43,14 +46,14 @@ const AdminDash = () => {
       const totalUsers = allUsers.length;
       setTopUsers(allUsers.slice(0, 5));
 
-      const coursesRes = await fetch("http://localhost:5000/getCourse", {
+      const coursesRes = await fetch(`${BASE_URL}/getCourse`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const coursesData = await coursesRes.json();
       const allCourses = coursesData.courses || [];
       setTopCourses(allCourses.slice(0, 5));
 
-      const sectionsRes = await fetch("http://localhost:5000/getSection", {
+      const sectionsRes = await fetch(`${BASE_URL}/getSection`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const sectionsData = await sectionsRes.json();

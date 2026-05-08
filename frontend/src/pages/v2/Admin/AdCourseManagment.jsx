@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([])
@@ -28,7 +29,7 @@ const CourseManagement = () => {
       setLoading(true)
       const token = localStorage.getItem('token')
 
-      const response = await fetch('http://localhost:5000/getCourse', {
+      const response = await fetch(`${BASE_URL}/getCourse`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -61,7 +62,7 @@ const CourseManagement = () => {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch('http://localhost:5000/createCourse', {
+      const response = await fetch(`${BASE_URL}/createCourse`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -105,7 +106,7 @@ const CourseManagement = () => {
         ...(editFormData.creditHours !== '' && { creditHours: editFormData.creditHours })
       }
 
-      const response = await fetch('http://localhost:5000/changeCourseInfo', {
+      const response = await fetch(`${BASE_URL}/changeCourseInfo`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -135,7 +136,7 @@ const CourseManagement = () => {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`http://localhost:5000/deleteCourse?courseCode=${courseCode}`, {
+      const response = await fetch(`${BASE_URL}/deleteCourse?courseCode=${courseCode}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -191,9 +192,9 @@ const CourseManagement = () => {
       </div>
 
       <div className="w-full overflow-x-auto rounded-lg border-2 border-blue-600/50 shadow-2xl bg-zinc-900/30 backdrop-blur">
-        <table className="w-full bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900">
+        <table className="w-full bg-linear-to-r from-zinc-900 via-zinc-800 to-zinc-900">
           <thead>
-            <tr className="border-b-2 border-blue-600/50 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-950">
+            <tr className="border-b-2 border-blue-600/50 bg-linear-to-r from-blue-950 via-blue-900 to-blue-950">
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Course Code</th>
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Course Name</th>
               <th className="px-6 py-4 text-left font-bold text-blue-100 text-sm uppercase tracking-wider">Credit Hours</th>

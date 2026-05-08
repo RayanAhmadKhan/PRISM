@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 // Safe date parser — "2026-04-25" won't shift back a day in UTC+5
 const parseDate = (str) => {
@@ -52,7 +53,7 @@ const StCourse = ({ studentId, token }) => {
   useEffect(() => {
     if (!studentId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/getSection?id=${studentId}`, {
+    fetch(`${BASE_URL}/getSection?id=${studentId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -65,7 +66,7 @@ const StCourse = ({ studentId, token }) => {
   // FIX: must be "id" not "studentId" — backend controller uses filter.$or on "id"
   useEffect(() => {
     if (!studentId) return;
-    fetch(`http://localhost:5000/getAttendanceRecord?id=${studentId}`, {
+    fetch(`${BASE_URL}/getAttendanceRecord?id=${studentId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -144,7 +145,7 @@ const StCourse = ({ studentId, token }) => {
             placeholder="Course or section name…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-zinc-900 border-2 border-gray-600 text-white p-2 rounded-sm text-sm min-w-[180px]"
+            className="bg-zinc-900 border-2 border-gray-600 text-white p-2 rounded-sm text-sm min-w-45"
           />
         </div>
 

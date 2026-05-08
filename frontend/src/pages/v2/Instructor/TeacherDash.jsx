@@ -6,6 +6,8 @@ import Table from "../../../components/Table";
 import TchAttendance from "./TchAttendance";
 import TchCase from "./TchCase";
 import TchProfile from "./TchProfile";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 
 const getCurrentSemester = () => {
   const month = new Date().getMonth() + 1;
@@ -31,7 +33,7 @@ const TeacherDashboard = () => {
 
   useEffect(() => {
     if (!instructorId) return;
-    fetch(`http://localhost:5000/getSection?id=${instructorId}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getSection?id=${instructorId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((data) => {
         const raw      = data.sections || [];
@@ -44,7 +46,7 @@ const TeacherDashboard = () => {
 
   useEffect(() => {
     if (!instructorId) return;
-    fetch(`http://localhost:5000/getFlaggedCases?markedBy=${instructorId}`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE_URL}/getFlaggedCases?markedBy=${instructorId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((data) => {
         const raw = data.flaggedCases || data || [];

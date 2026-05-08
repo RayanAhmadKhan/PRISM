@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 // ── Mark Attendance Modal ─────────────────────────────────────────────────────
 const MarkModal = ({ session, markRoll, setMarkRoll, markMethod, setMarkMethod, markMsg, markLoading, onSubmit, onClose, fmtDate }) => (
@@ -114,7 +115,7 @@ const TchAttendance = ({ instructorId, token }) => {
   // ── Fetch sections ──
   useEffect(() => {
     if (!instructorId) return;
-    fetch(`http://localhost:5000/getSection?id=${instructorId}`, {
+    fetch(`${BASE_URL}/getSection?id=${instructorId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
@@ -137,7 +138,7 @@ const TchAttendance = ({ instructorId, token }) => {
   const fetchSessions = () => {
     setLoadingSessions(true);
     fetch(
-      `http://localhost:5000/getAttendanceRecord?sectionId=${selectedSection}&markedBy=${instructorId}`,
+      `${BASE_URL}/getAttendanceRecord?sectionId=${selectedSection}&markedBy=${instructorId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
       .then(r => r.json())
@@ -156,7 +157,7 @@ const TchAttendance = ({ instructorId, token }) => {
     e.preventDefault();
     setCreateLoading(true); setCreateMsg("");
     try {
-      const res = await fetch("http://localhost:5000/createAttendance", {
+      const res = await fetch(`${BASE_URL}/createAttendance`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ sectionId: selectedSection, markedBy: instructorId, date: createDate }),
@@ -177,7 +178,7 @@ const TchAttendance = ({ instructorId, token }) => {
     e.preventDefault();
     setMarkLoading(true); setMarkMsg("");
     try {
-      const res = await fetch("http://localhost:5000/markAttendance", {
+      const res = await fetch(`${BASE_URL}/markAttendance`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -206,7 +207,7 @@ const TchAttendance = ({ instructorId, token }) => {
     setDeletingId(session._id);
     try {
       const res = await fetch(
-        `http://localhost:5000/deleteAttendanceRecord?attendanceId=${session._id}`,
+        `${BASE_URL}/deleteAttendanceRecord?attendanceId=${session._id}`,
         { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {
