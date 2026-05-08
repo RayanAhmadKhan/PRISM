@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // Both plugins must be inside this single array
+    tailwindcss(),
   ],
+  build: {
+    outDir: "dist",
+  },
 });
