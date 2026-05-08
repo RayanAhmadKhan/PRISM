@@ -28,7 +28,14 @@ import changePasswordRoute from "./routes/changePasswordRoute.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://prism-two-tan.vercel.app'   // your actual Vercel/Vessel URL
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use("/test", testRoutes);
