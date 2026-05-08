@@ -7,6 +7,8 @@ import AdminDash from "./pages/v2/Admin/AdminDash.jsx";
 import TeacherDash from "./pages/v2/Instructor/TeacherDash.jsx";
 import StudentDash from "./pages/v2/Student/StudentDash.jsx";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+
 // Protected Route Component
 const ProtectedRoute = ({ children, role }) => {
   const token = localStorage.getItem("token");
@@ -25,7 +27,7 @@ const ProtectedRoute = ({ children, role }) => {
 
 function App() {
   useEffect(() => {
-    fetch("http://localhost:5000/")
+    fetch(`${BASE_URL}/`)
       .then(res => res.json())
       .then(data => console.log("Backend Connected:", data))
       .catch(err => console.log("Backend Error:", err));
