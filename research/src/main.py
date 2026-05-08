@@ -14,6 +14,24 @@ from src.config import LOG_DATA_PATH, RAW_IMAGES_PATH
 logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(title="PRISM AI Core")
+app = FastAPI()
+
+@app.get("/debug/pkl-files")
+def check_pkl_files():
+    path = "data/enrollment_db_store"
+
+    if not os.path.exists(path):
+        return {"exists": False}
+
+    files = os.listdir(path)
+
+    print("PKL FILES:", files)  # shows in Render logs
+
+    return {
+        "exists": True,
+        "count": len(files),
+        "files": files
+    }
 
 # ── DEBUG: surface full traceback in 500 responses so root cause is visible ──
 @app.exception_handler(Exception)
