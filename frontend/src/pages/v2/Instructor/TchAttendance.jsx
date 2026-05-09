@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
-
+import BASE_URL from '../../config';
 // ── Mark Attendance Modal ─────────────────────────────────────────────────────
 const MarkModal = ({ session, markRoll, setMarkRoll, markMethod, setMarkMethod, markMsg, markLoading, onSubmit, onClose, fmtDate }) => (
   <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">

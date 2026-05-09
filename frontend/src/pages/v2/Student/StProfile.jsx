@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
-
+import BASE_URL from '../../config';
 
 const StProfile = ({ studentId, token, decoded }) => {
   const [profile,      setProfile]      = useState(null);

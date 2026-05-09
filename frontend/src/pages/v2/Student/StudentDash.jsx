@@ -3,8 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import Navbar from "../../../components/Navbar";
 import StCourse from "./StCourse";
 import StProfile from "./StProfile";
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
-
+import BASE_URL from '../../config';
 // ── Semester helpers ──────────────────────────────────────────────────────────
 // Use T12:00:00 to avoid UTC-midnight timezone shift (e.g. UTC+5 shifts date back 1 day)
 const getSemesterRange = (type, year) => {

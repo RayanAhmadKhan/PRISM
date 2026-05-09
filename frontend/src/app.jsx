@@ -7,7 +7,7 @@ import AdminDash from "./pages/v2/Admin/AdminDash.jsx";
 import TeacherDash from "./pages/v2/Instructor/TeacherDash.jsx";
 import StudentDash from "./pages/v2/Student/StudentDash.jsx";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
+const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com";
 console.log("Base URL in ProtectedRoute:", BASE_URL); // Debugging line to check the API URL being used
 
 // Protected Route Component

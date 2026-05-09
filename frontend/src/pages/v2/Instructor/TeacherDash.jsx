@@ -6,8 +6,7 @@ import Table from "../../../components/Table";
 import TchAttendance from "./TchAttendance";
 import TchCase from "./TchCase";
 import TchProfile from "./TchProfile";
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
-
+import BASE_URL from '../../config';
 
 const getCurrentSemester = () => {
   const month = new Date().getMonth() + 1;

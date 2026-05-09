@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-const BASE_URL = import.meta.env.VITE_API_URL || "https://prism-backend-iyo3.onrender.com"
-
+import BASE_URL from '../../config';
 // Safe date parser — "2026-04-25" won't shift back a day in UTC+5
 const parseDate = (str) => {
   if (!str) return new Date(NaN);
