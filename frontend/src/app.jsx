@@ -8,10 +8,10 @@ import TeacherDash from "./pages/v2/Instructor/TeacherDash.jsx";
 import StudentDash from "./pages/v2/Student/StudentDash.jsx";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+console.log("Base URL in ProtectedRoute:", BASE_URL); // Debugging line to check the API URL being used
 
 // Protected Route Component
 const ProtectedRoute = ({ children, role }) => {
-  console.log("Base URL in ProtectedRoute:", BASE_URL); // Debugging line to check the API URL being used
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
 
