@@ -11,6 +11,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 // Protected Route Component
 const ProtectedRoute = ({ children, role }) => {
+  console.log("Base URL in ProtectedRoute:", BASE_URL); // Debugging line to check the API URL being used
   const token = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
 
