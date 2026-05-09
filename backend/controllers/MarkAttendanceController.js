@@ -7,33 +7,36 @@ import env from "dotenv";
 env.config();
 
 export const markAttendance = async (req, res) => {
-    try{
+    try {
         const { studentRollNumber, attendanceId, method } = req.body;
         const attendanceRecord = await Attendance.findById(attendanceId);
         const student = await Students.findOne({ rollNumber: studentRollNumber });
-        if (method !== "face" && method !== "fingerprint"){
+
+        if (method !== "face" && method !== "fingerprint") {
             return res.status(400).json({ message: "Invalid attendance marking method" });
         }
-        if(!student){
+        if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
-
-        if(!attendanceRecord){
+        if (!attendanceRecord) {
             return res.status(404).json({ message: "Attendance record not found" });
         }
-        if(attendanceRecord.status === "closed"){
+        if (attendanceRecord.status === "closed") {
             return res.status(400).json({ message: "Attendance is closed for this session" });
         }
-        const studentRecord = attendanceRecord.students.find(s => s.student.toString() === student._id.toString());
-        if(!studentRecord){
+
+        const studentRecord = attendanceRecord.students.find(
+            s => s.student.toString() === student._id.toString()
+        );
+
+        if (!studentRecord) {
             return res.status(404).json({ message: "Student not found in this attendance record" });
         }
-        if(studentRecord.status !== "Absent"){
+        if (studentRecord.status !== "Absent") {
             return res.status(400).json({ message: "Attendance already marked for this student" });
         }
 
         let response = null;
-        let confidenceScore = 0;
         let maxRetries = 3;
         let retryCount = 0;
 
@@ -53,11 +56,31 @@ export const markAttendance = async (req, res) => {
                     );
 
                     console.log(`Attempt ${retryCount + 1}: Verification result:`, response.data);
-                    
-                    confidenceScore = response.data.result?.trust_evaluation?.score || 0;
+
+                    // ─── FINGERPRINT LOGIC ───────────────────────────────────────
+                    if (method === "fingerprint") {
+                        const isMatch = response.data.result?.is_match;
+                        const similarity = response.data.result?.fingerprint_similarity || 0;
+
+                        if (isMatch) {
+                            studentRecord.status = "Present";
+                            studentRecord.confidenceScore = similarity * 100;
+                            studentRecord.verificationResult = response.data.result;
+                            console.log(`Fingerprint matched. Attendance marked as Present.`);
+                        } else {
+                            studentRecord.status = "Absent";
+                            studentRecord.confidenceScore = similarity * 100;
+                            studentRecord.verificationResult = response.data.result;
+                            console.log(`Fingerprint not matched. Attendance marked as Absent.`);
+                        }
+                        break;
+                    }
+
+                    // ─── FACE LOGIC ──────────────────────────────────────────────
+                    const confidenceScore = response.data.result?.trust_evaluation?.score || 0;
                     console.log(`Confidence Score: ${confidenceScore}%`);
 
-                    if (response.data.result?. is_match === false) {
+                    if (response.data.result?.is_match === false) {
                         studentRecord.status = "Absent";
                         studentRecord.confidenceScore = confidenceScore;
                         studentRecord.verificationResult = response.data.result;
@@ -71,32 +94,31 @@ export const markAttendance = async (req, res) => {
                         studentRecord.verificationResult = response.data.result;
                         console.log(`Low confidence (${confidenceScore}%). Attendance marked as Absent.`);
                         break;
-                    }
-                    else if (confidenceScore >= 60) {
+                    } else if (confidenceScore >= 60) {
                         studentRecord.status = "Present";
                         studentRecord.confidenceScore = confidenceScore;
                         studentRecord.verificationResult = response.data.result;
                         console.log(`Attendance marked as Present with confidence: ${confidenceScore}%`);
                         break;
-                    }
-                    else {
+                    } else {
                         retryCount++;
-                        console.log(`Confidence in range [50-75) (${confidenceScore}%). Retry ${retryCount}/${maxRetries}`);
-                        
+                        console.log(`Confidence in range [50-60) (${confidenceScore}%). Retry ${retryCount}/${maxRetries}`);
+
                         if (retryCount >= maxRetries) {
                             studentRecord.status = "Absent";
                             studentRecord.flagged = true;
                             studentRecord.confidenceScore = confidenceScore;
                             studentRecord.verificationResult = response.data.result;
-                            studentRecord.flagReason = "Confidence score consistently between 50-75% after 3 verification attempts";
+                            studentRecord.flagReason = "Confidence score consistently between 50-60% after 3 verification attempts";
                             console.log("Attendance flagged due to low confidence after 3 retries");
                             break;
                         }
                     }
+
                 } catch (axiosErr) {
                     retryCount++;
                     console.error(`Attempt ${retryCount} failed:`, axiosErr);
-                    
+
                     if (retryCount >= maxRetries) {
                         throw new Error(`Verification failed after ${maxRetries} attempts: ${axiosErr.message}`);
                     }
@@ -104,17 +126,17 @@ export const markAttendance = async (req, res) => {
             }
         } catch (verifyErr) {
             console.error("Attendance verification error:", verifyErr.message);
-            return res.status(400).json({ 
-                message: "Attendance verification failed", 
-                error: verifyErr.message 
+            return res.status(400).json({
+                message: "Attendance verification failed",
+                error: verifyErr.message
             });
         }
 
         await attendanceRecord.save();
         return res.status(200).json({ message: "Attendance marked successfully", data: attendanceRecord });
-    }
-    catch(err){
+
+    } catch (err) {
         console.error("Error marking attendance:", err);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
