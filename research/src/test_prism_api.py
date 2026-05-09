@@ -163,13 +163,16 @@ FACE_FAIL = {
 }
 FP_OK = {"status": "success", "is_match": True,  "fingerprint_similarity": 0.55, "threshold": 0.20}
 FP_FAIL = {"status": "success", "is_match": False, "fingerprint_similarity": 0.05, "threshold": 0.20}
-REALTIME_OK = {
+
+# Realtime stubs now wrap the result in { message, result } matching the updated endpoint
+REALTIME_OK_INNER = {
     "status": "success", "is_match": True,
     "face_distance": 0.12, "distance_threshold": 0.299,
     "liveness_score": 0.95, "capture_quality": 180.0,
     "modality": "face", "preview_enabled": False,
     "trust_evaluation": {"score": 90.0, "category": "High Confidence", "is_flagged": False},
 }
+REALTIME_OK = REALTIME_OK_INNER  # kept for tests that check verify_realtime_attendance directly
 
 
 # ===========================================================================
@@ -418,9 +421,8 @@ class TestAttendanceRealtime:
     def test_face_match_returns_200_with_message(self):
         recognition_sys.verify_realtime_attendance.return_value = REALTIME_OK
         res = client.post("/api/attendance/realtime",
-                          data={"user_id": "u050", "modality": "face",
-                                "camera_index": 0, "timeout_seconds": 8,
-                                "show_preview": False})
+                          data={"user_id": "u050", "modality": "face"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
         body = res.json()
         assert "realtime" in body["message"].lower()
@@ -429,16 +431,18 @@ class TestAttendanceRealtime:
     def test_face_not_matched_message(self):
         recognition_sys.verify_realtime_attendance.return_value = {**REALTIME_OK, "is_match": False}
         res = client.post("/api/attendance/realtime",
-                          data={"user_id": "u051", "modality": "face"})
+                          data={"user_id": "u051", "modality": "face"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
         assert "not matched" in res.json()["message"].lower()
 
     def test_error_status_returns_400(self):
         recognition_sys.verify_realtime_attendance.return_value = {
-            "status": "error", "message": "No frame captured from webcam."
+            "status": "error", "message": "No image provided or image file not found."
         }
         res = client.post("/api/attendance/realtime",
-                          data={"user_id": "u052", "modality": "face"})
+                          data={"user_id": "u052", "modality": "face"},
+                          files={"file": _jpeg()})
         assert res.status_code == 400
 
     def test_fingerprint_modality(self):
@@ -446,7 +450,8 @@ class TestAttendanceRealtime:
                  "fingerprint_similarity": 0.40, "threshold": 0.14}
         recognition_sys.verify_realtime_attendance.return_value = fp_rt
         res = client.post("/api/attendance/realtime",
-                          data={"user_id": "u053", "modality": "fingerprint"})
+                          data={"user_id": "u053", "modality": "fingerprint"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
 
     def test_numpy_types_serialized_cleanly(self):
@@ -466,15 +471,40 @@ class TestAttendanceRealtime:
         }
         recognition_sys.verify_realtime_attendance.return_value = numpy_result
         res = client.post("/api/attendance/realtime",
-                          data={"user_id": "u054", "modality": "face"})
+                          data={"user_id": "u054", "modality": "face"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
         body = res.json()
         assert isinstance(body["result"]["is_match"], bool)
         assert isinstance(body["result"]["face_distance"], float)
 
     def test_missing_user_id_returns_422(self):
-        res = client.post("/api/attendance/realtime", data={"modality": "face"})
+        res = client.post("/api/attendance/realtime",
+                          data={"modality": "face"},
+                          files={"file": _jpeg()})
         assert res.status_code == 422
+
+    def test_missing_file_returns_422(self):
+        """File is now required — omitting it must return 422."""
+        res = client.post("/api/attendance/realtime",
+                          data={"user_id": "u055", "modality": "face"})
+        assert res.status_code == 422
+
+    def test_bad_file_type_returns_400(self):
+        res = client.post("/api/attendance/realtime",
+                          data={"user_id": "u056", "modality": "face"},
+                          files={"file": _bad_file()})
+        assert res.status_code == 400
+
+    def test_verify_realtime_called_with_image_path(self):
+        """Confirm verify_realtime_attendance is called with image_path kwarg."""
+        recognition_sys.verify_realtime_attendance.return_value = REALTIME_OK
+        client.post("/api/attendance/realtime",
+                    data={"user_id": "u057", "modality": "face"},
+                    files={"file": _jpeg()})
+        _, kwargs = recognition_sys.verify_realtime_attendance.call_args
+        assert "image_path" in kwargs
+        assert kwargs["image_path"] is not None
 
 
 # ===========================================================================
@@ -489,23 +519,31 @@ class TestAttendanceRealtimeFace:
     def test_success(self):
         recognition_sys.verify_realtime_attendance.return_value = REALTIME_OK
         res = client.post("/api/attendance/realtime/face",
-                          data={"user_id": "u060"})
+                          data={"user_id": "u060"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
 
     def test_calls_verify_realtime_with_face_modality(self):
         recognition_sys.verify_realtime_attendance.return_value = REALTIME_OK
-        client.post("/api/attendance/realtime/face", data={"user_id": "u061"})
-        args, kwargs = recognition_sys.verify_realtime_attendance.call_args
-        modality_passed = kwargs.get("modality") or (args[1] if len(args) > 1 else None)
-        assert modality_passed == "face"
+        client.post("/api/attendance/realtime/face",
+                    data={"user_id": "u061"},
+                    files={"file": _jpeg()})
+        _, kwargs = recognition_sys.verify_realtime_attendance.call_args
+        assert kwargs.get("modality") == "face"
 
     def test_error_returns_400(self):
         recognition_sys.verify_realtime_attendance.return_value = {
-            "status": "error", "message": "Camera not available."
+            "status": "error", "message": "User face not enrolled."
         }
         res = client.post("/api/attendance/realtime/face",
-                          data={"user_id": "u062"})
+                          data={"user_id": "u062"},
+                          files={"file": _jpeg()})
         assert res.status_code == 400
+
+    def test_missing_file_returns_422(self):
+        res = client.post("/api/attendance/realtime/face",
+                          data={"user_id": "u063"})
+        assert res.status_code == 422
 
 
 # ===========================================================================
@@ -522,24 +560,32 @@ class TestAttendanceRealtimeFingerprint:
                  "fingerprint_similarity": 0.35, "threshold": 0.14}
         recognition_sys.verify_realtime_attendance.return_value = fp_rt
         res = client.post("/api/attendance/realtime/fingerprint",
-                          data={"user_id": "u070"})
+                          data={"user_id": "u070"},
+                          files={"file": _jpeg()})
         assert res.status_code == 200
 
     def test_calls_verify_realtime_with_fingerprint_modality(self):
         fp_rt = {**REALTIME_OK, "modality": "fingerprint"}
         recognition_sys.verify_realtime_attendance.return_value = fp_rt
-        client.post("/api/attendance/realtime/fingerprint", data={"user_id": "u071"})
-        args, kwargs = recognition_sys.verify_realtime_attendance.call_args
-        modality_passed = kwargs.get("modality") or (args[1] if len(args) > 1 else None)
-        assert modality_passed == "fingerprint"
+        client.post("/api/attendance/realtime/fingerprint",
+                    data={"user_id": "u071"},
+                    files={"file": _jpeg()})
+        _, kwargs = recognition_sys.verify_realtime_attendance.call_args
+        assert kwargs.get("modality") == "fingerprint"
 
     def test_error_returns_400(self):
         recognition_sys.verify_realtime_attendance.return_value = {
             "status": "error", "message": "User fingerprint not enrolled."
         }
         res = client.post("/api/attendance/realtime/fingerprint",
-                          data={"user_id": "u072"})
+                          data={"user_id": "u072"},
+                          files={"file": _jpeg()})
         assert res.status_code == 400
+
+    def test_missing_file_returns_422(self):
+        res = client.post("/api/attendance/realtime/fingerprint",
+                          data={"user_id": "u073"})
+        assert res.status_code == 422
 
 
 # ===========================================================================

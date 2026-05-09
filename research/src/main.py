@@ -193,23 +193,38 @@ def _sanitize(obj):
     return obj
 
 
+# ── Realtime attendance endpoints (now cloud-safe: accept file upload) ────────
+#
+# The browser captures the image; the server only processes it.
+# verify_realtime_attendance() no longer opens a webcam — it receives image_path.
+
 @app.post("/api/attendance/realtime")
 async def attendance_realtime(
     user_id: str = Form(...),
     modality: str = Form("face"),
-    camera_index: int = Form(0),
-    timeout_seconds: int = Form(8),
-    show_preview: bool = Form(True),
+    file: UploadFile = File(...),
 ):
-    result = recognition_sys.verify_realtime_attendance(
-        user_id,
-        modality=modality,
-        camera_index=camera_index,
-        timeout_seconds=timeout_seconds,
-        show_preview=show_preview,
-    )
+    """
+    Cloud-safe realtime attendance endpoint.
+    Accepts a browser-captured image and runs the full enhanced verification
+    pipeline (liveness, consensus for face; adaptive threshold for fingerprint).
+    """
+    if not _is_allowed_image(file):
+        raise HTTPException(status_code=400, detail="Only .jpg/.jpeg/.png images are supported.")
+
+    path = save_temp_file(file)
+    try:
+        result = recognition_sys.verify_realtime_attendance(
+            user_id,
+            image_path=path,
+            modality=modality,
+        )
+    finally:
+        _safe_remove(path)
+
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))
+
     mode = result.get("modality", modality)
     safe_result = _sanitize(result)
     return JSONResponse(
@@ -227,33 +242,18 @@ async def attendance_realtime(
 @app.post("/api/attendance/realtime/face")
 async def attendance_realtime_face(
     user_id: str = Form(...),
-    camera_index: int = Form(0),
-    timeout_seconds: int = Form(8),
-    show_preview: bool = Form(True),
+    file: UploadFile = File(...),
 ):
-    return await attendance_realtime(
-        user_id=user_id,
-        modality="face",
-        camera_index=camera_index,
-        timeout_seconds=timeout_seconds,
-        show_preview=show_preview,
-    )
+    return await attendance_realtime(user_id=user_id, modality="face", file=file)
 
 
 @app.post("/api/attendance/realtime/fingerprint")
 async def attendance_realtime_fingerprint(
     user_id: str = Form(...),
-    camera_index: int = Form(0),
-    timeout_seconds: int = Form(8),
-    show_preview: bool = Form(True),
+    file: UploadFile = File(...),
 ):
-    return await attendance_realtime(
-        user_id=user_id,
-        modality="fingerprint",
-        camera_index=camera_index,
-        timeout_seconds=timeout_seconds,
-        show_preview=show_preview,
-    )
+    return await attendance_realtime(user_id=user_id, modality="fingerprint", file=file)
+
 
 @app.post("/api/train-model")
 async def train_model():
