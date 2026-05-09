@@ -1,10 +1,5 @@
 {
-  "env": {
-    "VITE_API_URL": "https://prism-backend-iyo3.onrender.com"
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": "https://prism-backend-iyo3.onrender.com"
-    }
-  }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
