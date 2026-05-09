@@ -1,0 +1,10 @@
+{
+  "env": {
+    "VITE_API_URL": "https://your-actual-app.onrender.com"
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://your-actual-app.onrender.com"
+    }
+  }
+}
