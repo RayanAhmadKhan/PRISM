@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 const BASE_URL = import.meta.env.VITE_API_URL
-console.log("API URL:", BASE_URL); // Debugging line to check the API URL being used
 
 
 const Login = () => {
@@ -22,7 +21,7 @@ const Login = () => {
     try {
       setError("");
       setIsLoading(true);
-
+      console.log("API URL:", BASE_URL); // Debugging line to check the API URL being used
       const res = await axios.post(`${BASE_URL}/loginUser`, {
         id,
         password
