@@ -6,7 +6,8 @@ import Table from "../../../components/Table";
 import TchAttendance from "./TchAttendance";
 import TchCase from "./TchCase";
 import TchProfile from "./TchProfile";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
+
 
 const getCurrentSemester = () => {
   const month = new Date().getMonth() + 1;

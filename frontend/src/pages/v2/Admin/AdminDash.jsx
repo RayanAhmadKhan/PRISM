@@ -8,7 +8,7 @@ import AdAttendanceQA from "./AdAttendanceQA";
 
 import { jwtDecode } from "jwt-decode";
 
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
 
 const AdminDash = () => {
   const [activeTab, setActiveTab] = useState("overview");

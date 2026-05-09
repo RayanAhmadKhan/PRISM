@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
+
 // Safe date parser — "2026-04-25" won't shift back a day in UTC+5
 const parseDate = (str) => {
   if (!str) return new Date(NaN);

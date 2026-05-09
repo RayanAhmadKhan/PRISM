@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
+
 
 const TchProfile = ({ instructorId, instructorName, token }) => {
   const [sectionCount, setSectionCount] = useState(0);

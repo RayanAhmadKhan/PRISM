@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
 
 const AdChangeSection = () => {
   const [courses, setCourses] = useState([]);

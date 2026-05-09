@@ -3,7 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import Navbar from "../../../components/Navbar";
 import StCourse from "./StCourse";
 import StProfile from "./StProfile";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
+
 // ── Semester helpers ──────────────────────────────────────────────────────────
 // Use T12:00:00 to avoid UTC-midnight timezone shift (e.g. UTC+5 shifts date back 1 day)
 const getSemesterRange = (type, year) => {

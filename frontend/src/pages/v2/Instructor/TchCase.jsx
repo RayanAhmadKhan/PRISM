@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import BASE_URL from '../../config';
+import BASE_URL from '../../../config.js';
+
 const TchCase = ({ instructorId, token }) => {
   const [flaggedCases, setFlaggedCases] = useState([]);
   const [loading, setLoading] = useState(true);
