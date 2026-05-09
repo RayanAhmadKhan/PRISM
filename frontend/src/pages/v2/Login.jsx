@@ -5,6 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL
 
 
 const Login = () => {
+  consle.log("API URL:", BASE_URL); // Debugging line to check the API URL being used
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
