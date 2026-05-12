@@ -2,12 +2,19 @@ import { jest } from "@jest/globals";
 
 let capturedCheckRoleArg;
 
+// ── Mock Controller ─────────────────────────────────────────
+const mockUploadMiddleware = (req, res, next) => next();
+
 jest.unstable_mockModule("../controllers/MarkAttendanceController.js", () => ({
   markAttendance: jest.fn((req, res) =>
     res.status(200).json({ message: "Attendance marked successfully" })
   ),
+  upload: {
+    single: () => mockUploadMiddleware,
+  },
 }));
 
+// ── Mock Auth Middleware ────────────────────────────────────
 jest.unstable_mockModule("../middleware/authMiddleware.js", () => ({
   verifyToken: jest.fn((req, res, next) => {
     req.user = { id: "inst1", role: "instructor" };
@@ -22,16 +29,19 @@ jest.unstable_mockModule("../middleware/authMiddleware.js", () => ({
   }),
 }));
 
+// ── Imports AFTER mocks (important for ESM) ──────────────────
 const express = (await import("express")).default;
 const request = (await import("supertest")).default;
 const { default: router } = await import("../routes/MarkAttendanceRoute.js");
 const { markAttendance } = await import("../controllers/MarkAttendanceController.js");
 const { verifyToken } = await import("../middleware/authMiddleware.js");
 
+// ── App Setup ───────────────────────────────────────────────
 const app = express();
 app.use(express.json());
 app.use("/mark-attendance", router);
 
+// ── Tests ───────────────────────────────────────────────────
 describe("POST /mark-attendance", () => {
   beforeEach(() => jest.clearAllMocks());
 
