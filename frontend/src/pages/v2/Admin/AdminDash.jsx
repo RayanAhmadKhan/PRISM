@@ -12,6 +12,7 @@ import BASE_URL from '../../../config.js';
 
 const AdminDash = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCourses: 0,
@@ -98,15 +99,41 @@ const AdminDash = () => {
         title={"Admin Dashboard"}
         user={jwtDecode(localStorage.getItem("token")).name || "Admin"}
       />
-      <div className="body bg-zinc-900 flex h-screen overflow-hidden">
-        <LeftNav
-          btn1={"Admin Dashboard"}
-          btn2={"User Management"}
-          btn3={"Course Management"}
-          btn4={"Section Management"}
-          btn5={"Attendance/QA"}
-          onTabChange={(tab) => setActiveTab(tab)}
-        />
+      {/* Hamburger Menu Button for Mobile */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed top-20 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <div className="body bg-zinc-900 flex min-h-screen overflow-hidden">
+        {/* Backdrop for mobile */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 bottom-0 md:relative md:top-auto md:left-auto md:bottom-auto z-50 md:z-auto w-full max-w-[18rem] md:w-56 h-full md:h-auto transform ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        >
+          <LeftNav
+            btn1={"Admin Dashboard"}
+            btn2={"User Management"}
+            btn3={"Course Management"}
+            btn4={"Section Management"}
+            btn5={"Attendance/QA"}
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+              setSidebarOpen(false); // Close sidebar on mobile after selection
+            }}
+          />
+        </div>
 
         <div className="container flex flex-col bg-linear-to-br from-zinc-900 via-zinc-800 to-blue-900 w-full overflow-hidden">
           <div className="content-area flex-1 overflow-y-auto p-3 md:p-6 flex flex-col items-center">

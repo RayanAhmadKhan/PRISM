@@ -86,7 +86,7 @@ const LeftNav = (props) => {
     ].filter(Boolean);
 
     return (
-        <div className="w-56 h-screen bg-linear-to-b from-zinc-950 via-zinc-900 to-blue-950 border-r-2 border-blue-600/50 flex flex-col items-center justify-between py-6 gap-4 overflow-y-auto shadow-2xl">
+        <div className="w-full max-w-[20rem] h-full md:w-56 md:h-screen bg-linear-to-b from-zinc-950 via-zinc-900 to-blue-950 border-r-2 border-blue-600/50 flex flex-col items-center justify-between py-6 gap-4 overflow-y-auto shadow-2xl">
             <div className="flex flex-col items-center gap-3 w-full px-3">
                 {buttons.map((label) => (
                     <button

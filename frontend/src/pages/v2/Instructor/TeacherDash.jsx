@@ -27,6 +27,7 @@ const TeacherDashboard = () => {
   const [loadingSections, setLoadingSections] = useState(true);
   const [loadingFlags,    setLoadingFlags]    = useState(true);
   const [activeTab,       setActiveTab]       = useState("dashboard");
+  const [sidebarOpen,     setSidebarOpen]     = useState(false);
 
   const currentYear     = new Date().getFullYear();
   const currentSemester = getCurrentSemester();
@@ -106,14 +107,40 @@ const TeacherDashboard = () => {
   return (
     <div className="min-h-dvh w-full">
       <Navbar title={"Teacher"} user={instructorName} />
-      <div className="body bg-zinc-900 flex">
-        <LeftNav
-          btn1={"Teacher Dashboard"}
-          btn2={"Attendance Record"}
-          btn3={"Flagged Cases"}
-          btn4={"Profile Settings"}
-          onTabChange={setActiveTab}
-        />
+      {/* Hamburger Menu Button for Mobile */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed top-20 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <div className="body bg-zinc-900 flex min-h-screen overflow-hidden">
+        {/* Backdrop for mobile */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 bottom-0 md:relative md:top-auto md:left-auto md:bottom-auto z-50 md:z-auto w-full max-w-[18rem] md:w-56 h-full md:h-auto transform ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        >
+          <LeftNav
+            btn1={"Teacher Dashboard"}
+            btn2={"Attendance Record"}
+            btn3={"Flagged Cases"}
+            btn4={"Profile Settings"}
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+              setSidebarOpen(false); // Close sidebar on mobile after selection
+            }}
+          />
+        </div>
         <div className="container h-screen flex flex-col bg-zinc-800 w-full overflow-y-auto">
           {renderContent()}
         </div>

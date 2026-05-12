@@ -90,6 +90,7 @@ const StudentDash = () => {
   const [semType,    setSemType]    = useState(getCurrentSemesterType());
   const [semYear,    setSemYear]    = useState(year);
   const [activeTab,  setActiveTab]  = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sections,   setSections]   = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [loading,    setLoading]    = useState(true);
@@ -187,14 +188,37 @@ const StudentDash = () => {
   return (
     <div className="min-h-screen w-full bg-zinc-800 text-white flex flex-col">
       <Navbar title="Student" user={studentName} />
+      {/* Hamburger Menu Button for Mobile */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed top-20 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg shadow-lg"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-screen">
+        {/* Backdrop for mobile */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
         {/* Left Nav */}
-        <div className="w-[15%] bg-zinc-900 border-r-2 border-gray-600 flex flex-col items-center py-6 gap-4 h-screen">
+        <div
+          className={`fixed top-0 left-0 bottom-0 md:relative md:top-auto md:left-auto md:bottom-auto z-50 md:z-auto w-full max-w-[18rem] md:w-[15%] bg-zinc-900 border-r-2 border-gray-600 flex flex-col items-center py-6 gap-4 h-full md:h-screen transform ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        >
           {navBtns.map(btn => (
             <button
               key={btn.id}
-              onClick={() => setActiveTab(btn.id)}
+              onClick={() => {
+                setActiveTab(btn.id);
+                setSidebarOpen(false); // Close on mobile
+              }}
               className={`flex items-center justify-center gap-2 p-2 w-40 font-bold rounded-sm cursor-pointer transition text-sm
                 ${activeTab === btn.id
                   ? "bg-blue-500 text-white"
